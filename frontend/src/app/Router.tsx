@@ -8,6 +8,7 @@ import AppLayout from '../shared/components/AppLayout';
 // import StatisticsPage from '@/features/statistics/StatisticsPage';
 // import ProfilePage from '@/features/profile/ProfilePage';
 import TestPage from '../features/Test';
+import TimerPage from '../features/Timer';
 import SubjectsPage from '../features/Subjects';
 import LeaderboardPage from '../features/Leaderboard';
 
@@ -20,6 +21,7 @@ export default function AppRouter() {
       <Route element={<AppLayout />}>
         <Route path="/" element={<Navigate to="/test" replace />} />
         <Route path="/test" element={<TestPage />} />
+        <Route path="/timer" element={<TimerPage />} />
         <Route path="/subjects" element={<SubjectsPage />} />
         <Route path="/leaderboard" element={<LeaderboardPage />} />
 
