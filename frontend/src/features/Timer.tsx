@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
+import { Play, Pause, RotateCcw } from 'lucide-react';
 
 export default function TimerPage() {
   const location = useLocation();
@@ -38,37 +39,62 @@ return (
         <h2 className="text-5xl font-bold text-white mb-4">Subject Placeholder</h2>
         <p className="text-xl text-white/80">This is the prototype for the timer page, timer goes ⌄⌄under here⌄⌄</p>
 
-        <div className="relative mb-8">
-              <svg className="transform -rotate-90" width="320" height="320">
-                <circle
-                  cx="160"
-                  cy="160"
-                  r="140"
-                  stroke="#e5e7eb"
-                  strokeWidth="20"
-                  fill="none"
-                />
-                <circle
-                  cx="160"
-                  cy="160"
-                  r="140"
-                  stroke="#3b82f6"
-                  strokeWidth="20"
-                  fill="none"
-                  strokeDasharray={`${(time % 3600) / 3600 * 880} 880`}
-                  strokeLinecap="round"
+        <div className="min-h-screen flex flex-col items-center justify-start pt-[5vh] gap-6">
+
+              {/* Timer */}
+              <div className="relative">
+                <svg className="transform -rotate-90" width="320" height="320">
+                  <circle
+                    cx="160"
+                    cy="160"
+                    r="140"
+                    stroke="#e5e7eb"
+                    strokeWidth="20"
+                    fill="none"
                   />
-              </svg>
-              <div className="absolute inset-0 flex items-center justify-center">
-                <div className="text-center">
-                  <div className="text-6xl font-bold text-gray-800 mb-2">
-                    {formatTime(time)}
-                  </div>
-                  <div className="text-lg text-gray-600">
-                    Today: {formatTime(todayStudyTime)}
+                  <circle
+                    cx="160"
+                    cy="160"
+                    r="140"
+                    stroke="#3b82f6"
+                    strokeWidth="20"
+                    fill="none"
+                    strokeDasharray={`${(time % 3600) / 3600 * 880} 880`}
+                    strokeLinecap="round"
+                  />
+                </svg>
+
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <div className="text-center">
+                    <div className="text-5xl font-bold text-gray-800 mb-2">
+                      {formatTime(time)}
+                    </div>
+                    <div className="text-lg text-gray-600">
+                      Today: {formatTime(todayStudyTime)}
+                    </div>
                   </div>
                 </div>
               </div>
+
+              <div className="flex gap-4 justify-center mb-6">
+
+              {/* Control buttons */}  
+              <button
+                onClick={() => setIsRunning(!isRunning)}
+                className="w-20 h-20 rounded-full shadow-lg flex items-center justify-center bg-blue-600 hover:bg-blue-700 transition"
+              >
+                {isRunning ? (
+                  <Pause size={32} className="text-white" />
+                ) : (
+                  <Play size={32} className="text-white ml-1" />
+                )}
+              </button>
+              <button
+                onClick={() => { setTime(0); setIsRunning(false); }}
+                className="w-20 h-20 rounded-full shadow-lg flex items-center justify-center bg-gray-200 hover:bg-gray-300 transition"
+              >
+                <RotateCcw size={28} className="text-gray-700" />
+              </button>
             </div>
 
         <button
@@ -79,6 +105,7 @@ return (
           </button>
         </div>     
         </div>
+      </div>
       </div>
   );
 }
@@ -133,4 +160,24 @@ return (
   //                 </div>
   //               </div>
   //             </div>
+  //           </div>
+
+
+  // <div className="flex gap-4 justify-center mb-6">
+  //             <button
+  //               onClick={() => setIsRunning(!isRunning)}
+  //               className="w-20 h-20 rounded-full shadow-lg flex items-center justify-center bg-blue-600 hover:bg-blue-700 transition"
+  //             >
+  //               {isRunning ? (
+  //                 <Pause size={32} className="text-white" />
+  //               ) : (
+  //                 <Play size={32} className="text-white ml-1" />
+  //               )}
+  //             </button>
+  //             <button
+  //               onClick={() => { setTime(0); setIsRunning(false); }}
+  //               className="w-20 h-20 rounded-full shadow-lg flex items-center justify-center bg-gray-200 hover:bg-gray-300 transition"
+  //             >
+  //               <RotateCcw size={28} className="text-gray-700" />
+  //             </button>
   //           </div>
