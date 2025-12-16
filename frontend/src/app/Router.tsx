@@ -5,11 +5,11 @@ import AppLayout from '../shared/components/AppLayout';
 // The following imports are commented because we have not created these pages yet.
 // import LoginPage from '@/features/auth/LoginPage';
 // import TimerPage from '@/features/timer/TimerPage';
-// import LeaderboardPage from '@/features/leaderboard/LeaderboardPage';
 // import StatisticsPage from '@/features/statistics/StatisticsPage';
 // import ProfilePage from '@/features/profile/ProfilePage';
 import TestPage from '../features/Test';
 import SubjectsPage from '../features/Subjects';
+import LeaderboardPage from '../features/Leaderboard';
 
 export default function AppRouter() {
   return (
@@ -21,10 +21,10 @@ export default function AppRouter() {
         <Route path="/" element={<Navigate to="/test" replace />} />
         <Route path="/test" element={<TestPage />} />
         <Route path="/subjects" element={<SubjectsPage />} />
+        <Route path="/leaderboard" element={<LeaderboardPage />} />
 
         {/* <Route path="/" element={<Navigate to="/timer" replace />} />
         <Route path="/timer" element={<TimerPage />} />
-        <Route path="/leaderboard" element={<LeaderboardPage />} />
         <Route path="/statistics" element={<StatisticsPage />} />
         <Route path="/profile" element={<ProfilePage />} /> */}
       </Route>

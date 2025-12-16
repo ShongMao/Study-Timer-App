@@ -5,7 +5,7 @@ export default function AppLayout() {
   return (
     <>
       <NavBar />
-      <main className="pt-16 min-h-screen">
+      <main className="min-h-screen">
         <Outlet />
       </main>
     </>
