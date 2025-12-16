@@ -6,8 +6,7 @@ export default function SubjectsPage() {
   const navigate = useNavigate();
   // const [currentPage, setCurrentPage] = useState('test');
 
-
-  
+  // This data will be pulled from the backend
   const subjects = [
     { name: 'Math', icon: '📐', color: 'from-blue-500 to-blue-600' },
     { name: 'Science', icon: '🔬', color: 'from-green-500 to-green-600' },
