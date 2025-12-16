@@ -1,9 +1,13 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 export default function SubjectsPage() {
   const [selectedSubject, setSelectedSubject] = useState('Math');
+  const navigate = useNavigate();
   // const [currentPage, setCurrentPage] = useState('test');
 
+
+  
   const subjects = [
     { name: 'Math', icon: '📐', color: 'from-blue-500 to-blue-600' },
     { name: 'Science', icon: '🔬', color: 'from-green-500 to-green-600' },
@@ -31,6 +35,9 @@ export default function SubjectsPage() {
               key={subject.name}
               onClick={() => {
                 setSelectedSubject(subject.name);
+                navigate('/timer', {
+                  state: { subject: subject.name } 
+                });
                 // setCurrentPage('test');
               }}
               className={`p-8 rounded-3xl shadow-2xl transition transform hover:scale-105 ${
