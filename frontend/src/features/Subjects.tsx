@@ -1,7 +1,9 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 export default function SubjectsPage() {
   const [selectedSubject, setSelectedSubject] = useState('Math');
+  const navigate = useNavigate();
   // const [currentPage, setCurrentPage] = useState('test');
 
   // This data will be pulled from the backend
@@ -32,6 +34,9 @@ export default function SubjectsPage() {
               key={subject.name}
               onClick={() => {
                 setSelectedSubject(subject.name);
+                navigate('/timer', {
+                  state: { subject: subject.name } 
+                });
                 // setCurrentPage('test');
               }}
               className={`p-8 rounded-3xl shadow-2xl transition transform hover:scale-105 ${

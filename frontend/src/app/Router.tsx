@@ -9,6 +9,7 @@ import AppLayout from '../shared/components/AppLayout';
 import LoginPage from '../features/Login';
 import SignupPage from '../features/Signup';
 import TestPage from '../features/Test';
+import TimerPage from '../features/Timer';
 import SubjectsPage from '../features/Subjects';
 import LeaderboardPage from '../features/Leaderboard';
 
@@ -21,6 +22,8 @@ export default function AppRouter() {
       {/* Main app pages - empty for now, but we will uncomment these as we create the app pages*/}
       <Route element={<AppLayout />}>
         <Route path="/" element={<Navigate to="/test" replace />} />
+        <Route path="/test" element={<TestPage />} />
+        <Route path="/timer" element={<TimerPage />} />
         <Route path="/subjects" element={<SubjectsPage />} />
         <Route path="/test" element={<TestPage />} />
         <Route path="/leaderboard" element={<LeaderboardPage />} />
