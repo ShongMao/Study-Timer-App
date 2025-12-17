@@ -7,6 +7,7 @@ import AppLayout from '../shared/components/AppLayout';
 // import StatisticsPage from '@/features/statistics/StatisticsPage';
 // import ProfilePage from '@/features/profile/ProfilePage';
 import LoginPage from '../features/Login';
+import SignupPage from '../features/Signup';
 import TestPage from '../features/Test';
 import SubjectsPage from '../features/Subjects';
 import LeaderboardPage from '../features/Leaderboard';
@@ -15,6 +16,7 @@ export default function AppRouter() {
   return (
     <Routes>
       <Route path="/login" element={<LoginPage />} />
+      <Route path="/signup" element={<SignupPage />} />
 
       {/* Main app pages - empty for now, but we will uncomment these as we create the app pages*/}
       <Route element={<AppLayout />}>

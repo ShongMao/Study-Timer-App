@@ -1,18 +1,19 @@
 import { Clock, Users, TrendingUp, Award} from 'lucide-react';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { login } from '../api/auth';
+import { register } from '../api/auth';
 
-export default function LoginPage() {
+export default function SignupPage() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const [email, setEmail] = useState('');
   const [error, setError] = useState('');
 
   const navigate = useNavigate();
 
-  const handleLogin = async () => {
+  const handleRegister = async () => {
     try {
-      const userId = await login(username, password);
+      const userId = await register(email, username, password);
       localStorage.setItem('userId', String(userId));
       setError('');
       navigate('/subjects');
@@ -39,7 +40,22 @@ export default function LoginPage() {
         
         {/* Form */}
         <div className="bg-white rounded-3xl p-10 shadow-2xl">
-          <h2 className="text-2xl font-bold text-gray-800 mb-6">Welcome Back</h2>
+          <h2 className="text-2xl font-bold text-gray-800 mb-6">Create Account</h2>
+          {/* Email field */}
+            <div className="mb-6">
+              <label className="block text-gray-700 text-sm font-semibold mb-2">
+                Email
+              </label>
+              <input
+                type="email"
+                value={email}
+                onChange={(e) => { setEmail(e.target.value); setError(''); }}
+                onKeyPress={(e) => e.key === 'Enter' && handleRegister()}
+                className="w-full px-5 py-4 border-2 border-gray-200 rounded-xl focus:border-amber-800 focus:outline-none transition text-lg"
+                placeholder="Enter your email"
+              />
+            </div>
+
 
           {/* Username field */}
           <div className="mb-6">
@@ -50,7 +66,7 @@ export default function LoginPage() {
               type="text"
               value={username}
               onChange={(e) => { setUsername(e.target.value); setError(''); }}
-              onKeyPress={(e) => e.key === 'Enter' && handleLogin()}
+              onKeyPress={(e) => e.key === 'Enter' && handleRegister()}
               className="w-full px-5 py-4 border-2 border-gray-200 rounded-xl focus:border-amber-800 focus:outline-none transition text-lg"
               placeholder="Enter your name"
             />
@@ -72,19 +88,18 @@ export default function LoginPage() {
             <p className="text-red-600 text-sm mb-4">{error}</p>
           )}
           <button
-            onClick={handleLogin}
+            onClick={handleRegister}
             className="w-full py-4 rounded-xl font-semibold text-white text-lg transition shadow-lg hover:shadow-xl hover:scale-105"
             style={{ background: 'linear-gradient(135deg, #815854 0%, #a67a75 100%)' }}
           >
             Start Studying
           </button>
-          
-          {/* Link to singup page */}
+          {/* Link to login page */}
           <button
-            onClick={() => navigate('/signup')}
+            onClick={() => navigate('/login')}
             className="mt-6 w-full text-center text-sm font-semibold text-amber-800 hover:underline"
           >
-            Don't have an account? Sign up
+            Already have an account? Log in
           </button>
         </div>
       </div>
