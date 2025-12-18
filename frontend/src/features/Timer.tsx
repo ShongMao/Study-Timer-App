@@ -1,6 +1,6 @@
-import React, { useEffect, useState, useRef } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { Play, Pause, RotateCcw } from 'lucide-react';
+import { Play, Pause, RotateCcw, Timer } from 'lucide-react';
 
 export default function TimerPage() {
   const location = useLocation();
@@ -8,6 +8,7 @@ export default function TimerPage() {
   const [time, setTime] = useState(0);
   const [isRunning, setIsRunning] = useState(false);
   const [todayStudyTime, setTodayStudyTime] = useState(0);
+  const [timerStatus, setTimerStatus] = useState('Ready to Study?');
   const intervalRef = useRef<number | null>(null);
 
   const formatTime = (seconds:any) => {
@@ -30,14 +31,18 @@ useEffect(() => {
   return () => clearInterval(interval);
 }, [isRunning]);
 
+useEffect(() => {
+    setTimerStatus(isRunning ? 'Studying...' : 'Paused');
+  }, [isRunning]);
+
 return (
   <div className="min-h-screen" style={{
     background: 'linear-gradient(75deg, #815956ff 0%, #ecd4beff 100%)'
   }}>
     <div className="max-w-6xl mx-auto p-12">
       <div className="text-center mb-12">
-        <h2 className="text-5xl font-bold text-white mb-4">Subject Placeholder</h2>
-        <p className="text-xl text-white/80">This is the prototype for the timer page, timer goes ⌄⌄under here⌄⌄</p>
+        <h2 className="text-5xl font-bold text-white mb-4">{subject}</h2>
+        <p className="text-xl text-white/80">{timerStatus}</p>
 
         <div className="min-h-screen flex flex-col items-center justify-start pt-[5vh] gap-6">
 
@@ -109,75 +114,3 @@ return (
       </div>
   );
 }
-
-//  useEffect(() => {
-//     if (isRunning) {
-//       intervalRef.current = setInterval(() => {
-//         setTime(t => t + 1);
-//         setTodayStudyTime(t => t + 1);
-//       }, 1000);
-//     } else {
-//       clearInterval(intervalRef.current);
-//     }
-//     return () => clearInterval(intervalRef.current);
-//   }, [isRunning]);
-
-//   const handleLogin = () => {
-//     if (username.trim()) {
-//       setCurrentPage('timer');
-//     }
-//   };
-
-
-  // <div className="relative mb-8">
-  //             <svg className="transform -rotate-90" width="320" height="320">
-  //               <circle
-  //                 cx="160"
-  //                 cy="160"
-  //                 r="140"
-  //                 stroke="#e5e7eb"
-  //                 strokeWidth="20"
-  //                 fill="none"
-  //               />
-  //               <circle
-  //                 cx="160"
-  //                 cy="160"
-  //                 r="140"
-  //                 stroke="#3b82f6"
-  //                 strokeWidth="20"
-  //                 fill="none"
-  //                 strokeDasharray={`${(time % 3600) / 3600 * 880} 880`}
-  //                 strokeLinecap="round"
-  //                 />
-  //             </svg>
-  //             <div className="absolute inset-0 flex items-center justify-center">
-  //               <div className="text-center">
-  //                 <div className="text-6xl font-bold text-gray-800 mb-2">
-  //                   {formatTime(time)}
-  //                 </div>
-  //                 <div className="text-lg text-gray-600">
-  //                   Today: {formatTime(todayStudyTime)}
-  //                 </div>
-  //               </div>
-  //             </div>
-  //           </div>
-
-
-  // <div className="flex gap-4 justify-center mb-6">
-  //             <button
-  //               onClick={() => setIsRunning(!isRunning)}
-  //               className="w-20 h-20 rounded-full shadow-lg flex items-center justify-center bg-blue-600 hover:bg-blue-700 transition"
-  //             >
-  //               {isRunning ? (
-  //                 <Pause size={32} className="text-white" />
-  //               ) : (
-  //                 <Play size={32} className="text-white ml-1" />
-  //               )}
-  //             </button>
-  //             <button
-  //               onClick={() => { setTime(0); setIsRunning(false); }}
-  //               className="w-20 h-20 rounded-full shadow-lg flex items-center justify-center bg-gray-200 hover:bg-gray-300 transition"
-  //             >
-  //               <RotateCcw size={28} className="text-gray-700" />
-  //             </button>
-  //           </div>
