@@ -1,15 +1,18 @@
 import { useEffect, useState, useRef } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import { Play, Pause, RotateCcw, Timer } from 'lucide-react';
+import { getTodayStudyTime, saveTimeStudied } from '../api/time';
 
 export default function TimerPage() {
   const location = useLocation();
   const navigate = useNavigate();
+  const subject = location.state?.subject || localStorage.getItem('currentSubject') || 'No Subject';
   const [time, setTime] = useState(0);
   const [isRunning, setIsRunning] = useState(false);
   const [todayStudyTime, setTodayStudyTime] = useState(0);
   const [timerStatus, setTimerStatus] = useState('Ready to Study?');
   const intervalRef = useRef<number | null>(null);
+  const userId = localStorage.getItem('userId');
 
   const formatTime = (seconds:any) => {
   const h = Math.floor(seconds / 3600);
@@ -18,22 +21,63 @@ export default function TimerPage() {
   return `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
 };
 
-const subject = location.state?.subject ?? 'No Subject';
+const saveStudyTime = async () => {
+  try {
+    const userId = localStorage.getItem('userId');
+    if (!userId) return;
+
+    await saveTimeStudied(userId, subject, time);
+  } catch (error) {
+    console.error('Failed to save study time:', error);
+  }
+};
+
 
 useEffect(() => {
   if (!isRunning) return;
 
-  const interval = setInterval(() => {
+  const interval = setInterval(async () => {
     setTime(t => t + 1);
     setTodayStudyTime(t => t + 1);
+
+    const userId = localStorage.getItem('userId');
+    if (!userId) return;
+
+    try {
+      await saveTimeStudied(userId, subject, 1); // save 1 second at a time
+    } catch (err) {
+      console.error('Failed to save time:', err);
+    }
   }, 1000);
 
   return () => clearInterval(interval);
-}, [isRunning]);
+}, [isRunning, subject]);
+
 
 useEffect(() => {
-    setTimerStatus(isRunning ? 'Studying...' : 'Paused');
-  }, [isRunning]);
+  const fetchStudyTime = async () => {
+    const userId = localStorage.getItem('userId');
+    if (!userId) return;
+
+    try {
+      const studyTime = await getTodayStudyTime(userId, subject);
+      setTodayStudyTime(studyTime);
+    } catch (err) {
+      console.error("Failed to fetch today's study time:", err);
+    }
+  };
+
+  fetchStudyTime();
+}, [subject]);
+
+useEffect(() => {
+  if (!isRunning && time > 0) {
+    const userId = localStorage.getItem('userId');
+    if (!userId) return;
+
+    saveTimeStudied(userId, subject, time);
+  }
+}, [isRunning]);
 
 return (
   <div className="min-h-screen" style={{
@@ -95,7 +139,7 @@ return (
                 )}
               </button>
               <button
-                onClick={() => { setTime(0); setIsRunning(false); }}
+                onClick={() => { setTime(0); setIsRunning(false); }} // Reset button
                 className="w-20 h-20 rounded-full shadow-lg flex items-center justify-center bg-gray-200 hover:bg-gray-300 transition"
               >
                 <RotateCcw size={28} className="text-gray-700" />
@@ -114,3 +158,4 @@ return (
       </div>
   );
 }
+
