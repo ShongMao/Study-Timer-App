@@ -1,5 +1,5 @@
 import express, { Request, Response } from "express";
-import { userRegister, userLogin } from "./app";
+import { userRegister, userLogin, addSubject } from "./app";
 import { clearDB } from "./db";
 import config from "../config.json";
 import cors from 'cors';
@@ -46,6 +46,28 @@ app.post('/v1/user/login', (req: Request, res: Response) => {
       res.status(400).json({ error: 'Unknown error occured' }); 
     }
   }
+})
+
+app.post('/v1/user/:userId/subject', (req: Request, res: Response) => {
+  const userId = Number(req.params.userId);
+  const {name} = req.body;
+
+  if (!name || typeof name !== 'string') {
+    res.status(400).json({ error: "Subject name is required" });
+    return;
+  }
+
+  try {
+    const subjectId = addSubject(userId, name);
+    res.status(201).json({ subjectId });
+  } catch (err) {
+    if (err instanceof Error) {
+      res.status(400).json({ error: err.message });
+    } else {
+      res.status(400).json({ error: "Unknown error occurred" });
+    }
+  }
+
 })
 
 app.delete('/v1/clear', (_req: Request, res: Response) => {
