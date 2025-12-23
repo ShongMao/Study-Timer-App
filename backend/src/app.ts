@@ -78,7 +78,7 @@ export function addSubject(userId: number, name: string): number {
     id: subjectId,
     name,
     totalStudySeconds: 0,
-    sessions: [],
+    //sessions: [],
   }
 
   user.subjects.push(subject);
@@ -99,6 +99,27 @@ export function deleteSubject(userId: number, subjectId: number): void {
   }
 
   user.subjects.splice(subjectIndex, 1);
+}
+
+export function userDetails(userId: number): User {
+  const user = findUser(userId);
+  if (!user) throw new Error("User not found");
+  
+  return {
+    id: user.id,
+    email: user.email,
+    username: user.username,
+    subjects: user.subjects,
+  };
+}
+
+export function getSubjects(userId: number): Subject[] {
+  const user = findUser(userId);
+  if (!user) {
+    throw new Error("User not found");
+  }
+
+  return user.subjects;
 }
 
 export function findUser(userId: number): User | null {
