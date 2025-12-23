@@ -100,7 +100,7 @@ export default function SubjectsPage() {
             >
               <div
                 className="text-6xl mb-4 cursor-pointer"
-                onClick={() => navigate("/timer", { state: { subject } })}
+                onClick={() => navigate("/timer", { state: { subject: subject.name } })}
               >
                 📚
               </div>
