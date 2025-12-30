@@ -2,10 +2,8 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { fetchSubjects, addSubject, deleteSubject } from '../api/subject';
 import type { Subject } from '../api/subject';
+
 export default function SubjectsPage() {
-  //const [selectedSubject, setSelectedSubject] = useState('Math');
-  //const navigate = useNavigate();
-  // const [currentPage, setCurrentPage] = useState('test');
   const navigate = useNavigate();
   const [subjects, setSubjects] = useState<Subject[]>([]);
   const [newSubjectName, setNewSubjectName] = useState('');
@@ -28,17 +26,13 @@ export default function SubjectsPage() {
   };
 
   useEffect(() => {
+    if (!userId) {
+      console.warn("No userId found in localStorage");
+      navigate("/login");
+      return;
+    }
     loadSubjects();
   }, []);
-
-  useEffect(() => {
-  if (!userId) {
-    console.warn("No userId found in localStorage");
-    navigate("/login"); // redirect to login if missing
-    return;
-  }
-  loadSubjects();
-}, []);
 
   const handleAddSubject = async () => {
     if (!newSubjectName.trim() || !userId) return;
@@ -76,20 +70,39 @@ export default function SubjectsPage() {
         
         {error && <p className="text-red-600 text-center mb-4">{error}</p>}
 
-        <div className="flex mb-6 gap-2 justify-center">
-          <input
-            type="text"
-            placeholder="New Subject Name"
-            value={newSubjectName}
-            onChange={(e) => setNewSubjectName(e.target.value)}
-            className="px-4 py-2 rounded-xl outline-none"
-          />
-          <button
-            onClick={handleAddSubject}
-            className="px-4 py-2 rounded-xl bg-amber-800 text-white font-bold hover:bg-amber-700 transition"
-          >
-            Add
-          </button>
+        {/* Input field and add button */}
+        <div className="flex justify-center mb-6">
+          <div className="flex bg-white rounded-xl shadow-md overflow-hidden">
+            <input
+              type="text"
+              placeholder="New Subject Name"
+              value={newSubjectName}
+              onChange={(e) => setNewSubjectName(e.target.value)}
+              className="
+                px-4 py-2
+                outline-none
+                border-r border-gray-200
+                rounded-none
+                rounded-l-xl
+                focus:border-amber-800
+              "
+            />
+            <button
+              onClick={handleAddSubject}
+              className="
+                px-4 py-2
+                bg-amber-800
+                text-white
+                font-bold
+                hover:bg-amber-700
+                transition
+                rounded-none
+                rounded-r-xl
+              "
+            >
+              Add
+            </button>
+          </div>
         </div>
 
         <div className="grid grid-cols-4 gap-6">

@@ -4,12 +4,10 @@ import AppLayout from '../shared/components/AppLayout';
 import ProtectedRoute from './ProtectedRoute';
 
 // The following imports are commented because we have not created these pages yet.
-// import TimerPage from '@/features/timer/TimerPage';
 // import StatisticsPage from '@/features/statistics/StatisticsPage';
 // import ProfilePage from '@/features/profile/ProfilePage';
 import LoginPage from '../features/Login';
 import SignupPage from '../features/Signup';
-// import TestPage from '../features/Test';
 import TimerPage from '../features/Timer';
 import SubjectsPage from '../features/Subjects';
 import LeaderboardPage from '../features/Leaderboard';
