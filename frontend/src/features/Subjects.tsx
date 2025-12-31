@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { fetchSubjects, addSubject, deleteSubject } from '../api/subject';
 import type { Subject } from '../api/subject';
+import { Trash2 } from "lucide-react";
 
 export default function SubjectsPage() {
   const navigate = useNavigate();
@@ -9,6 +10,19 @@ export default function SubjectsPage() {
   const [newSubjectName, setNewSubjectName] = useState('');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [isMobile, setIsMobile] = useState(
+  window.matchMedia('(max-width: 768px)').matches
+  );
+
+  useEffect(() => {
+    const media = window.matchMedia('(max-width: 768px)');
+    const handler = () => setIsMobile(media.matches);
+
+    media.addEventListener('change', handler);
+    return () => media.removeEventListener('change', handler);
+  }, []);
+
+  const BOOK_LIMIT = isMobile ? 100 : 7;
 
   const userId = localStorage.getItem('userId');
 
@@ -57,6 +71,10 @@ export default function SubjectsPage() {
 
   if (loading) return <p className="text-white text-center mt-20">Loading subjects...</p>;
 
+  const shelves: Subject[][] = [];
+  for (let i = 0; i < subjects.length; i += BOOK_LIMIT) {
+    shelves.push(subjects.slice(i, i + BOOK_LIMIT));
+  }
 
   return (
     <div className="min-h-screen" style={{
@@ -105,7 +123,7 @@ export default function SubjectsPage() {
           </div>
         </div>
 
-        <div className="grid grid-cols-4 gap-6">
+        {/* <div className="grid grid-cols-4 gap-6">
           {subjects.map((subject) => (
             <div
               key={subject.id}
@@ -126,7 +144,86 @@ export default function SubjectsPage() {
               </button>
             </div>
           ))}
+        </div> */}
+        <div className="flex justify-center">
+          <div className="flex gap-16">
+          {shelves.map((shelf, shelfIndex) => (
+            <div key={shelfIndex} className="flex gap-6">
+              
+              {/* Vertical shelf plank */}
+              <div className="relative w-6">
+                <div className="absolute inset-0 bg-gradient-to-b from-amber-900/70 to-amber-700/70 rounded-full shadow-lg" />
+              </div>
+
+              {/* Books on this shelf */}
+              <div className="flex flex-col gap-4">
+                {shelf.map((subject) => (
+                  <div
+                    key={subject.id}
+                    onClick={() =>
+                      navigate("/timer", { state: { subject: subject.name } })
+                    }
+                    className="
+                      group
+                      relative
+                      h-14
+                      w-64
+                      bg-gradient-to-r from-amber-700 to-amber-900
+                      rounded-md
+                      shadow-md
+                      cursor-pointer
+                      transition-all
+                      duration-300
+                      flex
+                      items-center
+                      justify-center
+
+                      hover:w-66
+                      hover:h-20
+                      hover:translate-x-2
+                      hover:shadow-xl
+                    "
+                  >
+                    {/* Subject title */}
+                    <span className="
+                      text-white
+                      font-semibold
+                      truncate
+                      text-center
+                      transition-all
+                      duration-300
+                      group-hover:text-base
+                    ">
+                      {subject.name}
+                    </span>
+
+                    {/* Delete button */}
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleDeleteSubject(subject.id);
+                      }}
+                      className="
+                        absolute
+                        right-3
+                        opacity-0
+                        group-hover:opacity-100
+                        text-white/70
+                        hover:text-red-300
+                        transition
+                      "
+                    >
+                      <Trash2 size={18} />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            </div>
+            ))}
+          </div>
+
         </div>
+
       </div>
     </div>
   );
