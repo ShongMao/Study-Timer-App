@@ -1,5 +1,7 @@
+const API_BASE = "http://localhost:3200/v1";
+
 export async function register(email: string, username: string, password: string): Promise<number> {
-  const response = await fetch('http://localhost:3200/v1/user/register', {
+  const response = await fetch(`${API_BASE}/user/register`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -17,7 +19,7 @@ export async function register(email: string, username: string, password: string
 }
 
 export async function login( username: string, password: string): Promise<number> {
-  const response = await fetch('http://localhost:3200/v1/user/login', {
+  const response = await fetch(`${API_BASE}/user/login`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -32,4 +34,10 @@ export async function login( username: string, password: string): Promise<number
   }
 
   return data.userId;
+}
+
+export async function fetchUser(userId: string) {
+  const res = await fetch(`/v1/user/${userId}/details`);
+  if (!res.ok) throw new Error("User not found");
+  return res.json();
 }

@@ -1,14 +1,13 @@
 import { Routes, Route, Navigate } from 'react-router-dom';
 
 import AppLayout from '../shared/components/AppLayout';
+import ProtectedRoute from './ProtectedRoute';
 
 // The following imports are commented because we have not created these pages yet.
-// import TimerPage from '@/features/timer/TimerPage';
 // import StatisticsPage from '@/features/statistics/StatisticsPage';
 // import ProfilePage from '@/features/profile/ProfilePage';
 import LoginPage from '../features/Login';
 import SignupPage from '../features/Signup';
-import TestPage from '../features/Test';
 import TimerPage from '../features/Timer';
 import SubjectsPage from '../features/Subjects';
 import LeaderboardPage from '../features/Leaderboard';
@@ -21,17 +20,38 @@ export default function AppRouter() {
 
       {/* Main app pages - empty for now, but we will uncomment these as we create the app pages*/}
       <Route element={<AppLayout />}>
-        <Route path="/" element={<Navigate to="/test" replace />} />
-        <Route path="/test" element={<TestPage />} />
-        <Route path="/timer" element={<TimerPage />} />
-        <Route path="/subjects" element={<SubjectsPage />} />
-        <Route path="/test" element={<TestPage />} />
-        <Route path="/leaderboard" element={<LeaderboardPage />} />
-
-        {/* <Route path="/" element={<Navigate to="/timer" replace />} />
-        <Route path="/timer" element={<TimerPage />} />
-        <Route path="/statistics" element={<StatisticsPage />} />
-        <Route path="/profile" element={<ProfilePage />} /> */}
+        <Route
+          path="/"
+          element={
+            <ProtectedRoute>
+              <Navigate to="/timer" replace />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/timer"
+          element={
+            <ProtectedRoute>
+              <TimerPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/subjects"
+          element={
+            <ProtectedRoute>
+              <SubjectsPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/leaderboard"
+          element={
+            <ProtectedRoute>
+              <LeaderboardPage />
+            </ProtectedRoute>
+          }
+        />
       </Route>
 
       {/* Fallback */}
