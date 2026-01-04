@@ -12,72 +12,137 @@ export default function TimerPage() {
   const [todayStudyTime, setTodayStudyTime] = useState(0);
   const [timerStatus, setTimerStatus] = useState('Ready to Study?');
   const intervalRef = useRef<number | null>(null);
-  const userId = localStorage.getItem('userId');
-
-  const formatTime = (seconds:any) => {
-  const h = Math.floor(seconds / 3600);
-  const m = Math.floor((seconds % 3600) / 60);
-  const s = seconds % 60;
-  return `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
-};
-
-const saveStudyTime = async () => {
-  try {
-    const userId = localStorage.getItem('userId');
-    if (!userId) return;
-
-    await saveTimeStudied(userId, subject, time);
-  } catch (error) {
-    console.error('Failed to save study time:', error);
-  }
-};
+//   const userId = localStorage.getItem('userId');
+//   if (!userId) {
+//   console.error("No userId found in localStorage");
+//   return; // skip the API call
+// }
+const storedUserId = localStorage.getItem('userId');
+const userId = storedUserId ?? '';
+const getTodayKey = () => {
+    const today = new Date();                                 //UNUSED CODE
+    return `${today.getFullYear()}-${today.getMonth() + 1}-${today.getDate()}`;
+  };
+let studyDuration = 0;
 
 
-useEffect(() => {
-  if (!isRunning) return;
-
-  const interval = setInterval(async () => {
-    setTime(t => t + 1);
-    setTodayStudyTime(t => t + 1);
-
-    const userId = localStorage.getItem('userId');
-    if (!userId) return;
-
-    try {
-      await saveTimeStudied(userId, subject, 1); // save 1 second at a time
-    } catch (err) {
-      console.error('Failed to save time:', err);
-    }
-  }, 1000);
-
-  return () => clearInterval(interval);
-}, [isRunning, subject]);
-
-
-useEffect(() => {
-  const fetchStudyTime = async () => {
-    const userId = localStorage.getItem('userId');
-    if (!userId) return;
-
-    try {
-      const studyTime = await getTodayStudyTime(userId, subject);
-      setTodayStudyTime(studyTime);
-    } catch (err) {
-      console.error("Failed to fetch today's study time:", err);
-    }
+  /* ------------------ Utils ------------------ */
+  const formatTime = (seconds: number) => {
+    const h = Math.floor(seconds / 3600);
+    const m = Math.floor((seconds % 3600) / 60);
+    const s = seconds % 60;
+    return `${h.toString().padStart(2, '0')}:${m
+      .toString()
+      .padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
   };
 
-  fetchStudyTime();
-}, [subject]);
+  const refreshTodayTime = async () => {
+  const studyTime = await getTodayStudyTime(userId, subject);
+  setTodayStudyTime(studyTime);
+};
+
+  /* ------------------ Timer logic ------------------ */
+  useEffect(() => {
+    if (!isRunning || !userId || !subject) return;
+
+    const interval = setInterval(async () => {
+      // Increment session time
+      setTime(t => t + 1);
+      setTodayStudyTime(k => k + 1);
+
+      try {
+        // Save 1 second to today's total (use normalized values)
+        await saveTimeStudied(userId, subject, 1);
+        const updatedTime = await getTodayStudyTime(userId, subject);
+        setTodayStudyTime(updatedTime);
+      } catch (err) {
+        console.error('Failed to save or fetch time:', err);
+      }
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, [isRunning, userId, subject]);
+
+
+/* ------------------ Load today's time ------------------ */
+// useEffect(() => {
+//   if (!userId || !subject) return;
+
+//   const fetchStudyTime = async () => {
+//     try {
+//       const studyTime = await getTodayStudyTime(userId, subject);
+//       setTodayStudyTime(studyTime);                                        JUST IN CASE
+//     } catch (err) {
+//       console.error("Failed to fetch today's study time:", err);
+//     }
+//   };
+
+//   fetchStudyTime();
+// }, [userId, subject]);
+
+const fetchTodayTime = async () => {
+  if (!userId || !subject) return;
+  try {
+    const studyTime = await getTodayStudyTime(userId, subject);
+    setTodayStudyTime(studyTime);
+  } catch (err) {
+    console.error("Failed to fetch today's study time:", err);
+  }
+};
 
 useEffect(() => {
-  if (!isRunning && time > 0) {
-    const userId = localStorage.getItem('userId');
-    if (!userId) return;
+  fetchTodayTime();
+}, [userId, subject]);
 
-    saveTimeStudied(userId, subject, time);
-  }
-}, [isRunning]);
+useEffect(() => {
+    const loadData = async () => {
+      try {
+        const storedData = localStorage.getItem('study-data');
+        if (storedData) {
+          const data = JSON.parse(storedData);
+          
+          const todayKey = getTodayKey();
+          if (data[todayKey]) {
+            const todayTotal = Object.values(data[todayKey]).reduce((sum: number, time) => sum + (time as number), 0) as number;
+            setTodayStudyTime(todayTotal);
+          }
+        }
+      } catch (error) {
+        console.log('No existing data found');
+      }
+    };
+    loadData();
+  }, []);
+
+/* ------------------ Save time on stop ------------------ */
+if (!isRunning && time > 0) {
+  studyDuration += todayStudyTime;
+}
+
+// const previousIsRunningRef = useRef(isRunning);
+
+// useEffect(() => {
+//   // Save time only when transitioning from running to stopped (not on reset)
+//   if (previousIsRunningRef.current && !isRunning && time > 0) {
+//     const userId = localStorage.getItem('userId');
+//     if (!userId) return;
+
+//     saveTimeStudied(userId, subject, time);
+//   }
+//   previousIsRunningRef.current = isRunning;
+// }, [isRunning, time, subject]);                                       UNUSED CODE
+
+// useEffect(() => {
+//   // Save time when user leaves the page
+//   return () => {
+//     if (time > 0) {
+//       const userId = localStorage.getItem('userId');
+//       if (userId) {
+//         saveTimeStudied(userId, subject, time);
+//       }
+//     }
+//   };
+// }, [time, subject]);
 
 return (
   <div className="min-h-screen" style={{
@@ -129,7 +194,12 @@ return (
 
               {/* Control buttons */}  
               <button
-                onClick={() => setIsRunning(!isRunning)}
+                onClick={() => {
+                  setIsRunning(!isRunning);
+                  setTimerStatus(isRunning ? "Paused" : "Studying...");
+                  // setTodayStudyTime(todayStudyTime);
+                  // saveTimeStudied(userId, subject, todayStudyTime);
+                }}
                 className="w-20 h-20 rounded-full shadow-lg flex items-center justify-center bg-blue-600 hover:bg-blue-700 transition"
               >
                 {isRunning ? (
@@ -158,4 +228,3 @@ return (
       </div>
   );
 }
-
