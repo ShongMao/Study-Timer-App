@@ -1,4 +1,4 @@
-import { db, User, Subject } from './db';
+import { db, User, Subject, StudySession } from './db';
 
 export function userRegister(email: string, password: string, username: string): number {
   const regex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
@@ -78,7 +78,7 @@ export function addSubject(userId: number, name: string): number {
     id: subjectId,
     name,
     totalStudySeconds: 0,
-    //sessions: [],
+    sessionIds: [],
   }
 
   user.subjects.push(subject);
@@ -120,6 +120,69 @@ export function getSubjects(userId: number): Subject[] {
   }
 
   return user.subjects;
+}
+
+export function startTimer(userId: number, subjectId: number) {
+  if (db.activeSessions.has(userId)) {
+    throw new Error('Timer already running');
+  }
+  const user = findUser(userId);
+  if (!user) throw new Error("User not found");
+
+  const session: StudySession = {
+    id: Date.now(),
+    userId,
+    subjectId,
+    startTime: Date.now()
+  };
+
+  db.studySessions.push(session);
+  db.activeSessions.set(userId, session.id);
+}
+
+export function stopTimer(userId: number) {
+  const user = findUser(userId);
+  if (!user) throw new Error("User not found");
+
+  const sessionId = db.activeSessions.get(userId);
+  if (!sessionId) {
+    throw new Error('No active timer');
+  }
+
+  const session = db.studySessions.find(s => s.id === sessionId)!;
+
+  session.endTime = Date.now();
+  session.durationSeconds = Math.floor(
+    (session.endTime - session.startTime) / 1000
+  );
+
+  const subject = user.subjects.find(
+    s => s.id === session.subjectId
+  );
+
+  if (!subject) {
+    throw new Error('Subject not found for session');
+  }
+
+  subject.totalStudySeconds += session.durationSeconds;
+  subject.sessionIds.push(session.id);
+
+  db.activeSessions.delete(userId);
+}
+
+export function getSubject(userId: number, subjectId: number): Subject {
+  const user = findUser(userId);
+  if (!user) throw new Error("User not found");
+
+  const subject = user.subjects.find(
+    s => s.id === subjectId
+  );
+
+  if (!subject) {
+    throw new Error('Subject not found for user');
+  }
+
+  return subject;
 }
 
 export function findUser(userId: number): User | null {

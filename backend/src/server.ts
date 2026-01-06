@@ -1,5 +1,5 @@
 import express, { Request, Response } from "express";
-import { userRegister, userLogin, addSubject, deleteSubject, getSubjects, userDetails } from "./app";
+import { userRegister, userLogin, addSubject, deleteSubject, getSubjects, userDetails, startTimer, stopTimer, getSubject } from "./app";
 import { clearDB } from "./db";
 import config from "../config.json";
 import cors from 'cors';
@@ -118,6 +118,67 @@ app.get('/v1/user/:userId/subjects', (req: Request, res: Response) => {
         res.status(404).json({ error: err.message });
       } else {
         res.status(400).json({ error: err.message });
+      }
+    } else {
+      res.status(400).json({ error: "Unknown error occurred" });
+    }
+  }
+});
+
+// Start timer
+app.post('/v1/timer/start', (req: Request, res: Response) => {
+  const { userId, subjectId } = req.body;
+  const numberId = Number(userId);
+  try {
+    startTimer(numberId, subjectId);
+    return res.status(200).json({ success: true });
+  } catch (err) {
+    if (err instanceof Error) {
+      if (err.message === 'User not found') {
+        res.status(404).json({ error: err.message });
+      } else {
+        res.status(400).json({ error: err.message });
+      }
+    } else {
+      res.status(400).json({ error: "Unknown error occurred" });
+    }
+  }
+});
+
+// Stop timer
+app.post('/v1/timer/stop', (req: Request, res: Response) => {
+  const userId = Number(req.body.userId);
+
+  try {
+    stopTimer(userId);
+    return res.status(200).json({ success: true });
+  } catch (err) {
+    if (err instanceof Error) {
+      if (err.message === 'User not found') {
+        res.status(404).json({ error: err.message });
+      } else {
+        res.status(400).json({ error: err.message });
+      }
+    } else {
+      res.status(400).json({ error: "Unknown error occurred" });
+    }
+  }
+});
+
+// Get specific subject
+app.get('/v1/timer/:userId/subject/:subjectId', (req: Request, res: Response) => {
+  const userId = Number(req.params.userId);
+  const subjectId = Number(req.params.subjectId);
+
+  try {
+    const subject = getSubject(userId, subjectId);
+    return res.status(200).json({ subject });
+  } catch (err) {
+    if (err instanceof Error) {
+      if (err.message === 'User not found') {
+        res.status(404).json({ error: err.message });
+      } else if (err.message === 'Subject not found for user') {
+        res.status(404).json({ error: err.message });
       }
     } else {
       res.status(400).json({ error: "Unknown error occurred" });

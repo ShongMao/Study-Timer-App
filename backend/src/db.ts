@@ -10,24 +10,28 @@ export interface Subject {
   id: number;
   name: string;
   totalStudySeconds: number;   // accumulated time
-  //sessions: StudySession[];    // history (optional but useful)
+  sessionIds: number[];    // history (optional but useful)
 }
 
-/*
+
 export interface StudySession {
-  sessionId: number;
+  id: number;
+  userId: number;
+
   subjectId: number;
   startTime: number; // unix timestamp (ms)
-  endTime: number;   // unix timestamp (ms)
-  durationSeconds: number;
+  endTime?: number;   // unix timestamp (ms)
+  durationSeconds?: number;
 }
-*/
+
 
 
 
 export const db = {
   users: [] as User[],
-  subjects: [] as Subject[]
+  subjects: [] as Subject[],
+  studySessions: [] as StudySession[],
+  activeSessions: new Map<number, number>() // maps userIds to sessionIds
 };
 
 // Optional helper for tests
