@@ -171,7 +171,7 @@ export default function SubjectsPage() {
                         key={subject.id}
                         onClick={() =>
                           navigate('/timer', {
-                            state: { subject: subject.name },
+                            state: { subject: subject },
                           })
                         }
                         onMouseLeave={() => setEditingSubjectId(null)}
