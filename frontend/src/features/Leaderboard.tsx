@@ -16,10 +16,10 @@ export default function LeaderboardPage() {
   
 
   return (
-    <div className="min-h-screen" style={{
-      background: 'linear-gradient(135deg, #815854 0%, #F9EBDE 100%)'
+    <div className="min-h-screen overflow-shown" style={{
+      background: 'linear-gradient(135deg, #1b0c1aff 0%, #4B2138 100%)'
     }}>
-      <div className="max-w-4xl mx-auto p-12">
+      <div className="max-w-4xl mx-auto p-12 scrollbar-show">
         <div className="text-center mb-12">
           <h2 className="text-5xl font-bold text-white mb-4">Friend Leaderboard</h2>
           <p className="text-xl text-white/80">Today's study time rankings</p>

@@ -10,3 +10,18 @@ html, body, #root {
   margin: 0;
   /* padd ing: 0; */
 }
+
+@layer utilities {
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  .no-scrollbar {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+}
+
+/* Disables scrolling & scrollbars globally */
+/* html, body {
+  overflow: hidden;
+} */

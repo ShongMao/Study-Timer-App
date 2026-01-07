@@ -74,6 +74,16 @@ export default function SubjectsPage() {
     loadSubjects();
   }, []);
 
+  useEffect(() => {
+  const originalOverflow = document.body.style.overflow;
+
+  document.body.style.overflow = 'hidden';
+
+  return () => {
+    document.body.style.overflow = originalOverflow;
+  };
+}, []);
+
   const handleAddSubject = async () => {
     if (!newSubjectName.trim() || !userId) return;
     try {
@@ -103,15 +113,15 @@ export default function SubjectsPage() {
   }
 
   return (
-    <div className="min-h-screen" style={{
-      background: 'linear-gradient(135deg, #815854 0%, #F9EBDE 100%)'
+    <div className="min-h-screen overflow-hidden" style={{
+      background: 'linear-gradient(150deg, #1b0c1aff 0%, #4B2138 100%)',
     }}>
-      <div className="max-w-6xl mx-auto p-12">
+      <div className="max-w-6xl mx-auto p-12 overflow-y-auto no-scrollbar">
         <div className="text-center mb-12">
           <h2 className="text-5xl font-bold text-white mb-4">Select Your Subject</h2>
           <p className="text-xl text-white/80">Choose what you're studying today</p>
         </div>
-        
+
         {error && <p className="text-red-600 text-center mb-4">{error}</p>}
 
         {/* Input field and add button */}
@@ -135,10 +145,10 @@ export default function SubjectsPage() {
               onClick={handleAddSubject}
               className="
                 px-4 py-2
-                bg-amber-800
+                bg-purple-950
                 text-white
                 font-bold
-                hover:bg-amber-700
+                hover:bg-purple-950
                 transition
                 rounded-none
                 rounded-r-xl
