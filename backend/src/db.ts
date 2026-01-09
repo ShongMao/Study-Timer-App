@@ -10,9 +10,10 @@ export interface Subject {
   id: number;
   name: string;
   totalStudySeconds: number;   // accumulated time
+  todayStudySeconds: number;
+  lastUpdatedDay: string;
   sessionIds: number[];    // history (optional but useful)
 }
-
 
 export interface StudySession {
   id: number;
@@ -23,9 +24,6 @@ export interface StudySession {
   endTime?: number;   // unix timestamp (ms)
   durationSeconds?: number;
 }
-
-
-
 
 export const db = {
   users: [] as User[],
