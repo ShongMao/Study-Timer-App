@@ -1,6 +1,6 @@
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { Play, Pause, RotateCcw, Timer } from 'lucide-react';
+import { Play, Pause, RotateCcw } from 'lucide-react';
 import { startTimer, stopTimer, fetchSubject } from '../api/timer'
 import type { Subject } from '../api/subject';
 
@@ -15,7 +15,6 @@ export default function TimerPage() {
   const [isRunning, setIsRunning] = useState(false);
   const [todayStudyTime, setTodayStudyTime] = useState(0);
   const [timerStatus, setTimerStatus] = useState('Ready to Study?');
-  const intervalRef = useRef<number | null>(null);
 
   const formatTime = (seconds:any) => {
     const h = Math.floor(seconds / 3600);
@@ -26,10 +25,6 @@ export default function TimerPage() {
 
   const state = location.state as TimerPageState | undefined;
   const subject = state?.subject;
-  if (!subject) {
-    navigate('/subjects');
-    return null;
-  }
 
   const rawUserId = localStorage.getItem('userId');
   if (!rawUserId) throw new Error('Not logged in');
@@ -38,13 +33,17 @@ export default function TimerPage() {
   const handleStartPause = async () => {
     try {
       if (!isRunning) {
-        await startTimer(userId, subject.id);
+        if (subject) {
+          await startTimer(userId, subject.id);
+        }
         setIsRunning(true);
       } else {
-        await stopTimer(userId);
+        if (subject) {
+          await stopTimer(userId);
+          const latestSubject = await fetchSubject(String(userId), subject.id);
+          setTodayStudyTime(latestSubject.totalStudySeconds || 0);
+        }
         setIsRunning(false);
-        const latestSubject = await fetchSubject(String(userId), subject.id);
-        setTodayStudyTime(latestSubject.totalStudySeconds || 0);
       }
     } catch (err: any) {
       alert(err.message);
@@ -52,9 +51,8 @@ export default function TimerPage() {
   };
 
   const handleRestart = async () => {
-
     try {
-      if (isRunning) {
+      if (isRunning && subject) {
         await stopTimer(userId);
       } 
       setTime(0);
@@ -62,7 +60,6 @@ export default function TimerPage() {
     } catch (err: any) {
       alert(err.message);
     }
-    
   }
 
   useEffect(() => {
@@ -81,21 +78,29 @@ export default function TimerPage() {
   }, [isRunning]);
 
   useEffect(() => {
-  const loadSubject = async () => {
-    try {
-      const rawUserId = localStorage.getItem('userId');
-      if (!rawUserId) throw new Error('Not logged in');
-      const userId = Number(rawUserId);
-
-      const latestSubject = await fetchSubject(String(userId), subject.id);
-      setTodayStudyTime(latestSubject.totalStudySeconds || 0);
-    } catch (err: any) {
-      console.warn("Failed to load subject totalStudySeconds:", err.message);
+  return () => {
+    if (isRunning && subject) {
+      stopTimer(userId).catch(err => {
+        console.warn("Failed to stop timer on unmount:", err.message);
+      });
     }
   };
+}, [isRunning, subject, userId]);
 
-  loadSubject();
-}, [subject.id]);
+  useEffect(() => {
+    if (!subject) return;
+
+    const loadSubject = async () => {
+      try {
+        const latestSubject = await fetchSubject(String(userId), subject.id);
+        setTodayStudyTime(latestSubject.totalStudySeconds || 0);
+      } catch (err: any) {
+        console.warn("Failed to load subject totalStudySeconds:", err.message);
+      }
+    };
+
+    loadSubject();
+  }, [subject?.id]);
 
   return (
     <div className="min-h-screen" style={{
@@ -103,7 +108,7 @@ export default function TimerPage() {
     }}>
       <div className="max-w-6xl mx-auto p-12">
         <div className="text-center mb-12">
-          <h2 className="text-5xl font-bold text-white mb-4">{subject.name}</h2>
+          <h2 className="text-5xl font-bold text-white mb-4">{subject ? subject.name : 'Timer'}</h2>
           <p className="text-xl text-white/80">{timerStatus}</p>
 
           <div className="min-h-screen flex flex-col items-center justify-start pt-[5vh] gap-6">
