@@ -148,7 +148,7 @@ export function stopTimer(userId: number) {
 
   const sessionId = db.activeSessions.get(userId);
   if (!sessionId) {
-    throw new Error('No active timer');
+    return;
   }
 
   const session = db.studySessions.find(s => s.id === sessionId)!;
