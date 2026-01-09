@@ -1,8 +1,10 @@
 export interface Subject {
   id: number;
   name: string;
-  totalStudySeconds: number;
-  sessionIds: [];
+  totalStudySeconds: number;  
+  todayStudySeconds: number;
+  lastUpdatedDay: string;
+  sessionIds: number[];
 }
 
 const API_BASE = "http://localhost:3200";
@@ -24,7 +26,7 @@ export async function addSubject(userId: string, name: string): Promise<Subject>
   });
   const data = await res.json();
   if (!res.ok) throw new Error(data.error || "Failed to add subject");
-  return { id: data.subjectId, name, totalStudySeconds: 0, sessionIds: [] };
+  return { id: data.subjectId, name, totalStudySeconds: 0, todayStudySeconds: 0, lastUpdatedDay: new Date().toISOString().slice(0, 10), sessionIds: [] };
 }
 
 // Delete a subject

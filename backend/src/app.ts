@@ -78,6 +78,8 @@ export function addSubject(userId: number, name: string): number {
     id: subjectId,
     name,
     totalStudySeconds: 0,
+    todayStudySeconds: 0,
+    lastUpdatedDay: new Date().toISOString().slice(0, 10),
     sessionIds: [],
   }
 
@@ -164,7 +166,15 @@ export function stopTimer(userId: number) {
     throw new Error('Subject not found for session');
   }
 
+  const today = getTodayKey();
+
+  if (subject.lastUpdatedDay !== today) {
+    subject.todayStudySeconds = 0;
+    subject.lastUpdatedDay = today;
+  }
+
   subject.totalStudySeconds += session.durationSeconds;
+  subject.todayStudySeconds += session.durationSeconds;
   subject.sessionIds.push(session.id);
 
   db.activeSessions.delete(userId);
@@ -189,4 +199,8 @@ export function findUser(userId: number): User | null {
   const user = db.users.find(u => u.id == userId);
 
   return user ?? null;
+}
+
+function getTodayKey(): string {
+  return new Date().toISOString().slice(0, 10); // YYYY-MM-DD
 }

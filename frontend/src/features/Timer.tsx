@@ -41,7 +41,7 @@ export default function TimerPage() {
         if (subject) {
           await stopTimer(userId);
           const latestSubject = await fetchSubject(String(userId), subject.id);
-          setTodayStudyTime(latestSubject.totalStudySeconds || 0);
+          setTodayStudyTime(latestSubject.todayStudySeconds || 0);
         }
         setIsRunning(false);
       }
@@ -78,14 +78,14 @@ export default function TimerPage() {
   }, [isRunning]);
 
   useEffect(() => {
-  return () => {
-    if (isRunning && subject) {
-      stopTimer(userId).catch(err => {
-        console.warn("Failed to stop timer on unmount:", err.message);
-      });
-    }
-  };
-}, [isRunning, subject, userId]);
+    return () => {
+      if (isRunning && subject) {
+        stopTimer(userId).catch(err => {
+          console.warn("Failed to stop timer on unmount:", err.message);
+        });
+      }
+    };
+  }, [isRunning, subject, userId]);
 
   useEffect(() => {
     if (!subject) return;
@@ -93,7 +93,7 @@ export default function TimerPage() {
     const loadSubject = async () => {
       try {
         const latestSubject = await fetchSubject(String(userId), subject.id);
-        setTodayStudyTime(latestSubject.totalStudySeconds || 0);
+        setTodayStudyTime(latestSubject.todayStudySeconds || 0);
       } catch (err: any) {
         console.warn("Failed to load subject totalStudySeconds:", err.message);
       }
