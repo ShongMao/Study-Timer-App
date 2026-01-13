@@ -1,4 +1,5 @@
 import { db, User, Subject, StudySession } from './db';
+import { findUser, getTodayKey, getYesterdayKey } from './helper';
 
 export function userRegister(email: string, password: string, username: string): number {
   const regex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
@@ -30,7 +31,8 @@ export function userRegister(email: string, password: string, username: string):
     email,
     username,
     password, 
-    subjects: []
+    subjects: [],
+    studyStreak: 0
   };
 
   db.users.push(newUser);
@@ -112,6 +114,8 @@ export function userDetails(userId: number): User {
     email: user.email,
     username: user.username,
     subjects: user.subjects,
+    ...(user.lastStudyDay && { lastStudyDay: user.lastStudyDay }),
+    studyStreak: user.studyStreak
   };
 }
 
@@ -168,6 +172,24 @@ export function stopTimer(userId: number) {
 
   const today = getTodayKey();
 
+  // Update study streak.
+
+  const yesterday = getYesterdayKey();
+
+  if (session.durationSeconds > 0) {
+    if (user.lastStudyDay !== today) {
+      if (user.lastStudyDay === yesterday) {
+        user.studyStreak += 1;
+      } else {
+        user.studyStreak = 1;
+      }
+
+      user.lastStudyDay = today;
+    }
+  }
+
+  // Update study seconds.
+
   if (subject.lastUpdatedDay !== today) {
     subject.todayStudySeconds = 0;
     subject.lastUpdatedDay = today;
@@ -195,12 +217,20 @@ export function getSubject(userId: number, subjectId: number): Subject {
   return subject;
 }
 
-export function findUser(userId: number): User | null {
-  const user = db.users.find(u => u.id == userId);
+export function getTodayLeaderBoard(limit: number) {
+  return db.users
+    .map(user => {
+      const totalTodaySeconds = user.subjects.reduce(
+        (sum, subject) => sum + subject.todayStudySeconds, 0
+      );
 
-  return user ?? null;
-}
-
-function getTodayKey(): string {
-  return new Date().toISOString().slice(0, 10); // YYYY-MM-DD
+      return {
+        userId: user.id,
+        username: user.username,
+        totalTodaySeconds,
+        studyStreak: user.studyStreak,
+      };
+    })
+    .sort((a, b) => b.totalTodaySeconds - a.totalTodaySeconds)
+    .slice(0, limit);
 }
