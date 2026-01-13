@@ -74,6 +74,17 @@ export default function SubjectsPage() {
     loadSubjects();
   }, []);
 
+  // Disables scrollbar and scrolling
+  useEffect(() => {
+  const originalOverflow = document.body.style.overflow;
+
+  document.body.style.overflow = 'hidden';
+
+  return () => {
+    document.body.style.overflow = originalOverflow;
+  };
+}, []);
+
   const handleAddSubject = async () => {
     if (!newSubjectName.trim() || !userId) return;
     try {
@@ -103,20 +114,20 @@ export default function SubjectsPage() {
   }
 
   return (
-    <div className="min-h-screen" style={{
-      background: 'linear-gradient(135deg, #815854 0%, #F9EBDE 100%)'
+    <div className="min-h-screen overflow-hidden" style={{
+      background: 'linear-gradient(150deg, #1b0c1aff 0%, #4B2138 100%)',
     }}>
-      <div className="max-w-6xl mx-auto p-12">
+      <div className="max-w-6xl mx-auto p-12 overflow-y-auto no-scrollbar">
         <div className="text-center mb-12">
           <h2 className="text-5xl font-bold text-white mb-4">Select Your Subject</h2>
           <p className="text-xl text-white/80">Choose what you're studying today</p>
         </div>
-        
+
         {error && <p className="text-red-600 text-center mb-4">{error}</p>}
 
         {/* Input field and add button */}
         <div className="flex justify-center mb-15">
-          <div className="flex bg-white rounded-xl shadow-md overflow-hidden">
+          <div className="flex rounded-xl shadow-md overflow-hidden">
             <input
               type="text"
               placeholder="New Subject Name"
@@ -124,6 +135,7 @@ export default function SubjectsPage() {
               onChange={(e) => setNewSubjectName(e.target.value)}
               className="
                 px-4 py-2
+                bg-white
                 outline-none
                 border-r border-gray-200
                 rounded-none
@@ -135,10 +147,10 @@ export default function SubjectsPage() {
               onClick={handleAddSubject}
               className="
                 px-4 py-2
-                bg-amber-800
+                bg-purple-950
                 text-white
                 font-bold
-                hover:bg-amber-700
+                hover:bg-purple-950
                 transition
                 rounded-none
                 rounded-r-xl
@@ -156,7 +168,7 @@ export default function SubjectsPage() {
               
               {/* Vertical shelf plank */}
               <div className="relative w-6">
-                <div className="absolute inset-0 bg-gradient-to-b from-amber-900/70 to-amber-700/70 rounded-full shadow-lg" />
+                <div className="absolute inset-0 bg-gradient-to-b from-purple-950/70 to-purple-700/70 rounded-full shadow-lg" />
               </div>
 
               {/* Books on this shelf */}

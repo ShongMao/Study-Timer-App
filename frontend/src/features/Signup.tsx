@@ -26,7 +26,7 @@ export default function SignupPage() {
 
   return (
       <div className="min-h-screen flex" style={{
-    background: 'linear-gradient(135deg, #815854 0%, #F9EBDE 100%)'
+    background: 'linear-gradient(135deg, #1b0c1aff 0%, #4B2138 100%)'
   }}>
     <div className="flex-1 flex items-center justify-center p-12">
       <div className="max-w-md w-full">
@@ -90,7 +90,7 @@ export default function SignupPage() {
           <button
             onClick={handleRegister}
             className="w-full py-4 rounded-xl font-semibold text-white text-lg transition shadow-lg hover:shadow-xl hover:scale-105"
-            style={{ background: 'linear-gradient(135deg, #815854 0%, #a67a75 100%)' }}
+            style={{ background: 'linear-gradient(135deg, #251124ff 0%, #572641ff 100%)' }}
           >
             Start Studying
           </button>
