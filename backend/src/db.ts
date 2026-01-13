@@ -4,6 +4,8 @@ export interface User {
   username: string;
   password?: string; // plain for now (hash later)
   subjects: Subject[];
+  lastStudyDay?: string;  // "YYYY-MM-DD"
+  studyStreak: number;
 }
 
 export interface Subject {

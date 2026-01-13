@@ -1,5 +1,5 @@
 import express, { Request, Response } from "express";
-import { userRegister, userLogin, addSubject, deleteSubject, getSubjects, userDetails, startTimer, stopTimer, getSubject } from "./app";
+import { userRegister, userLogin, addSubject, deleteSubject, getSubjects, userDetails, startTimer, stopTimer, getSubject, getTodayLeaderBoard } from "./app";
 import { clearDB } from "./db";
 import config from "../config.json";
 import cors from 'cors';
@@ -185,6 +185,17 @@ app.get('/v1/timer/:userId/subject/:subjectId', (req: Request, res: Response) =>
     }
   }
 });
+
+app.get('/v1/leaderboard/users', (req: Request, res: Response) => {
+  const limit = Number(req.body.limit);
+
+  try {
+    const leaderboard = getTodayLeaderBoard(limit);
+    return res.status(200).json({ leaderboard });
+  } catch (err) {
+    res.status(400).json({ error: "Unknown error occurred" });
+  }
+})
 
 app.delete('/v1/clear', (_req: Request, res: Response) => {
   clearDB();
