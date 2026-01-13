@@ -41,7 +41,7 @@ export default function TimerPage() {
         if (subject) {
           await stopTimer(userId);
           const latestSubject = await fetchSubject(String(userId), subject.id);
-          setTodayStudyTime(latestSubject.todayStudySeconds || 0);
+          setTodayStudyTime(latestSubject.totalStudySeconds || 0);
         }
         setIsRunning(false);
       }
@@ -93,7 +93,7 @@ export default function TimerPage() {
     const loadSubject = async () => {
       try {
         const latestSubject = await fetchSubject(String(userId), subject.id);
-        setTodayStudyTime(latestSubject.todayStudySeconds || 0);
+        setTodayStudyTime(latestSubject.totalStudySeconds || 0);
       } catch (err: any) {
         console.warn("Failed to load subject totalStudySeconds:", err.message);
       }
@@ -104,7 +104,7 @@ export default function TimerPage() {
 
   return (
     <div className="min-h-screen" style={{
-      background: 'linear-gradient(75deg, #815956ff 0%, #ecd4beff 100%)'
+      background: 'linear-gradient(75deg, #1b0c1aff 0%, #4B2138 100%)'
     }}>
       <div className="max-w-6xl mx-auto p-12">
         <div className="text-center mb-12">
@@ -128,7 +128,7 @@ export default function TimerPage() {
                       cx="160"
                       cy="160"
                       r="140"
-                      stroke="#3b82f6"
+                      stroke="#3b0764"
                       strokeWidth="20"
                       fill="none"
                       strokeDasharray={`${(time % 3600) / 3600 * 880} 880`}
@@ -138,7 +138,7 @@ export default function TimerPage() {
 
                   <div className="absolute inset-0 flex items-center justify-center">
                     <div className="text-center">
-                      <div className="text-5xl font-bold text-gray-800 mb-2">
+                      <div className="text-5xl font-bold text-purple-950 mb-2">
                         {formatTime(time)}
                       </div>
                       <div className="text-lg text-gray-600">
@@ -153,7 +153,7 @@ export default function TimerPage() {
                 {/* Control buttons */}  
                 <button
                   onClick={handleStartPause}
-                  className="w-20 h-20 rounded-full shadow-lg flex items-center justify-center bg-blue-600 hover:bg-blue-700 transition"
+                  className="w-20 h-20 rounded-full shadow-lg flex items-center justify-center bg-purple-950 hover:bg-purple-950 transition"
                 >
                   {isRunning ? (
                     <Pause size={32} className="text-white" />
@@ -165,13 +165,13 @@ export default function TimerPage() {
                   onClick={handleRestart}
                   className="w-20 h-20 rounded-full shadow-lg flex items-center justify-center bg-gray-200 hover:bg-gray-300 transition"
                 >
-                  <RotateCcw size={28} className="text-gray-700" />
+                  <RotateCcw size={28} className="text-purple-950" />
                 </button>
               </div>
 
           <button
               onClick={() => navigate('/subjects')}
-              className="px-8 py-4 bg-white rounded-2xl shadow-lg text-amber-800 font-bold text-lg hover:scale-105 transition"
+              className="px-8 py-4 bg-white rounded-2xl shadow-lg text-purple-950 font-bold text-lg hover:scale-105 transition"
             >
               Change Subject
             </button>
