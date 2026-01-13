@@ -74,6 +74,7 @@ export default function SubjectsPage() {
     loadSubjects();
   }, []);
 
+  // Disables scrollbar and scrolling
   useEffect(() => {
   const originalOverflow = document.body.style.overflow;
 
@@ -126,7 +127,7 @@ export default function SubjectsPage() {
 
         {/* Input field and add button */}
         <div className="flex justify-center mb-15">
-          <div className="flex bg-white rounded-xl shadow-md overflow-hidden">
+          <div className="flex rounded-xl shadow-md overflow-hidden">
             <input
               type="text"
               placeholder="New Subject Name"
@@ -134,6 +135,7 @@ export default function SubjectsPage() {
               onChange={(e) => setNewSubjectName(e.target.value)}
               className="
                 px-4 py-2
+                bg-white
                 outline-none
                 border-r border-gray-200
                 rounded-none
@@ -166,7 +168,7 @@ export default function SubjectsPage() {
               
               {/* Vertical shelf plank */}
               <div className="relative w-6">
-                <div className="absolute inset-0 bg-gradient-to-b from-amber-900/70 to-amber-700/70 rounded-full shadow-lg" />
+                <div className="absolute inset-0 bg-gradient-to-b from-purple-950/70 to-purple-700/70 rounded-full shadow-lg" />
               </div>
 
               {/* Books on this shelf */}

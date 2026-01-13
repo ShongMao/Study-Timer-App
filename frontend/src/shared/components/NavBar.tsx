@@ -14,7 +14,7 @@ export default function NavBar() {
   const linkClass = ({ isActive }: { isActive: boolean }) =>
   `flex items-center gap-2 transition-colors px-4 py-2 rounded-xl ${
     isActive
-      ? 'bg-[#245543] text-white'
+      ? 'bg-[#3b0764] text-white'
       : 'text-gray-600 hover:bg-gray-100'
   }`;
 

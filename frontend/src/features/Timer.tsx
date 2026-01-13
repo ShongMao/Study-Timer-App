@@ -1,6 +1,6 @@
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { Play, Pause, RotateCcw, Timer } from 'lucide-react';
+import { Play, Pause, RotateCcw } from 'lucide-react';
 import { startTimer, stopTimer, fetchSubject } from '../api/timer'
 import type { Subject } from '../api/subject';
 
@@ -15,7 +15,6 @@ export default function TimerPage() {
   const [isRunning, setIsRunning] = useState(false);
   const [todayStudyTime, setTodayStudyTime] = useState(0);
   const [timerStatus, setTimerStatus] = useState('Ready to Study?');
-  const intervalRef = useRef<number | null>(null);
 
   const formatTime = (seconds:any) => {
     const h = Math.floor(seconds / 3600);
@@ -26,10 +25,6 @@ export default function TimerPage() {
 
   const state = location.state as TimerPageState | undefined;
   const subject = state?.subject;
-  if (!subject) {
-    navigate('/subjects');
-    return null;
-  }
 
   const rawUserId = localStorage.getItem('userId');
   if (!rawUserId) throw new Error('Not logged in');
@@ -38,13 +33,17 @@ export default function TimerPage() {
   const handleStartPause = async () => {
     try {
       if (!isRunning) {
-        await startTimer(userId, subject.id);
+        if (subject) {
+          await startTimer(userId, subject.id);
+        }
         setIsRunning(true);
       } else {
-        await stopTimer(userId);
+        if (subject) {
+          await stopTimer(userId);
+          const latestSubject = await fetchSubject(String(userId), subject.id);
+          setTodayStudyTime(latestSubject.totalStudySeconds || 0);
+        }
         setIsRunning(false);
-        const latestSubject = await fetchSubject(String(userId), subject.id);
-        setTodayStudyTime(latestSubject.totalStudySeconds || 0);
       }
     } catch (err: any) {
       alert(err.message);
@@ -52,9 +51,8 @@ export default function TimerPage() {
   };
 
   const handleRestart = async () => {
-
     try {
-      if (isRunning) {
+      if (isRunning && subject) {
         await stopTimer(userId);
       } 
       setTime(0);
@@ -62,7 +60,6 @@ export default function TimerPage() {
     } catch (err: any) {
       alert(err.message);
     }
-    
   }
 
   useEffect(() => {
@@ -81,29 +78,37 @@ export default function TimerPage() {
   }, [isRunning]);
 
   useEffect(() => {
-  const loadSubject = async () => {
-    try {
-      const rawUserId = localStorage.getItem('userId');
-      if (!rawUserId) throw new Error('Not logged in');
-      const userId = Number(rawUserId);
+    return () => {
+      if (isRunning && subject) {
+        stopTimer(userId).catch(err => {
+          console.warn("Failed to stop timer on unmount:", err.message);
+        });
+      }
+    };
+  }, [isRunning, subject, userId]);
 
-      const latestSubject = await fetchSubject(String(userId), subject.id);
-      setTodayStudyTime(latestSubject.totalStudySeconds || 0);
-    } catch (err: any) {
-      console.warn("Failed to load subject totalStudySeconds:", err.message);
-    }
-  };
+  useEffect(() => {
+    if (!subject) return;
 
-  loadSubject();
-}, [subject.id]);
+    const loadSubject = async () => {
+      try {
+        const latestSubject = await fetchSubject(String(userId), subject.id);
+        setTodayStudyTime(latestSubject.totalStudySeconds || 0);
+      } catch (err: any) {
+        console.warn("Failed to load subject totalStudySeconds:", err.message);
+      }
+    };
+
+    loadSubject();
+  }, [subject?.id]);
 
   return (
     <div className="min-h-screen" style={{
-      background: 'linear-gradient(75deg, #006466 0%, #0b525b 100%)'
+      background: 'linear-gradient(75deg, #1b0c1aff 0%, #4B2138 100%)'
     }}>
       <div className="max-w-6xl mx-auto p-12">
         <div className="text-center mb-12">
-          <h2 className="text-5xl font-bold text-white mb-4">{subject.name}</h2>
+          <h2 className="text-5xl font-bold text-white mb-4">{subject ? subject.name : 'Timer'}</h2>
           <p className="text-xl text-white/80">{timerStatus}</p>
 
           <div className="min-h-screen flex flex-col items-center justify-start pt-[5vh] gap-6">
@@ -123,7 +128,7 @@ export default function TimerPage() {
                       cx="160"
                       cy="160"
                       r="140"
-                      stroke="#3b82f6"
+                      stroke="#3b0764"
                       strokeWidth="20"
                       fill="none"
                       strokeDasharray={`${(time % 3600) / 3600 * 880} 880`}
@@ -133,7 +138,7 @@ export default function TimerPage() {
 
                   <div className="absolute inset-0 flex items-center justify-center">
                     <div className="text-center">
-                      <div className="text-5xl font-bold text-gray-800 mb-2">
+                      <div className="text-5xl font-bold text-purple-950 mb-2">
                         {formatTime(time)}
                       </div>
                       <div className="text-lg text-gray-600">
@@ -148,7 +153,7 @@ export default function TimerPage() {
                 {/* Control buttons */}  
                 <button
                   onClick={handleStartPause}
-                  className="w-20 h-20 rounded-full shadow-lg flex items-center justify-center bg-blue-600 hover:bg-blue-700 transition"
+                  className="w-20 h-20 rounded-full shadow-lg flex items-center justify-center bg-purple-950 hover:bg-purple-950 transition"
                 >
                   {isRunning ? (
                     <Pause size={32} className="text-white" />
@@ -160,13 +165,13 @@ export default function TimerPage() {
                   onClick={handleRestart}
                   className="w-20 h-20 rounded-full shadow-lg flex items-center justify-center bg-gray-200 hover:bg-gray-300 transition"
                 >
-                  <RotateCcw size={28} className="text-gray-700" />
+                  <RotateCcw size={28} className="text-purple-950" />
                 </button>
               </div>
 
           <button
               onClick={() => navigate('/subjects')}
-              className="px-8 py-4 bg-white rounded-2xl shadow-lg text-amber-800 font-bold text-lg hover:scale-105 transition"
+              className="px-8 py-4 bg-white rounded-2xl shadow-lg text-purple-950 font-bold text-lg hover:scale-105 transition"
             >
               Change Subject
             </button>
