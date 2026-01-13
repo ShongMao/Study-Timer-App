@@ -176,7 +176,7 @@ export default function SubjectsPage() {
                   {shelf.map((subject) => {
                     const bgColor =
                       subjectColors[subject.id] ??
-                      'from-amber-700 to-amber-900';
+                      'from-purple-700 to-purple-950';
 
                     return (
                       <div
