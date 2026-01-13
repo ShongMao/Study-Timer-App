@@ -187,7 +187,7 @@ app.get('/v1/timer/:userId/subject/:subjectId', (req: Request, res: Response) =>
 });
 
 app.get('/v1/leaderboard/users', (req: Request, res: Response) => {
-  const limit = Number(req.body.limit);
+  const limit = Number(req.query.limit) || 7;
 
   try {
     const leaderboard = getTodayLeaderBoard(limit);

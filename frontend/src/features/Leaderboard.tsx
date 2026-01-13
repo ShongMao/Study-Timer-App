@@ -1,17 +1,56 @@
 import { Flame } from 'lucide-react';
 import { formatTime } from '../shared/util/format';
+import { useState, useEffect } from 'react';
+import { fetchTodayLeaderboard } from '../api/leaderboard';
 
 export default function LeaderboardPage() {
-  // This data will be pulled from the backend
-  const friends = [
-    { name: 'Sarah Kim', time: 14400, rank: 1, avatar: 'SK', streak: 12, weeklyTime: 75600 },
-    { name: 'John Lee', time: 12600, rank: 2, avatar: 'JL', streak: 8, weeklyTime: 68400 },
-    { name: 'Emma Park', time: 10800, rank: 3, avatar: 'EP', streak: 15, weeklyTime: 72000 },
-    { name: 'You', time: 200, rank: 4, avatar: 'XD', streak: 7, weeklyTime: 54000 },
-    { name: 'Mike Chen', time: 7200, rank: 5, avatar: 'MC', streak: 5, weeklyTime: 46800 },
-    { name: 'Lisa Wang', time: 6300, rank: 6, avatar: 'LW', streak: 10, weeklyTime: 43200 },
-    { name: 'Tom Davis', time: 5400, rank: 7, avatar: 'TD', streak: 3, weeklyTime: 36000 },
-  ].sort((a, b) => b.time - a.time).map((f, i) => ({ ...f, rank: i + 1 }));
+  const [friends, setFriends] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const loadLeaderboard = async () => {
+      try {
+        // Later we will add a "show top... button"
+        const data = await fetchTodayLeaderboard(10);
+
+        const ranked = data.map((user, i) => ({
+          name: user.username,
+          time: user.totalTodaySeconds,
+          streak: user.studyStreak,
+          rank: i + 1,
+          avatar: user.username
+            .split(' ')
+            .map(n => n[0])
+            .join('')
+            .slice(0, 2)
+            .toUpperCase(),
+        }));
+
+        setFriends(ranked);
+      } catch (err: any) {
+        alert(err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadLeaderboard();
+  }, []);
+
+  if (loading) {
+    return <div className="text-center text-white text-xl mt-20">Loading leaderboard...</div>;
+  }
+
+
+  // const friends = [
+  //   { name: 'Sarah Kim', time: 14400, rank: 1, avatar: 'SK', streak: 12, weeklyTime: 75600 },
+  //   { name: 'John Lee', time: 12600, rank: 2, avatar: 'JL', streak: 8, weeklyTime: 68400 },
+  //   { name: 'Emma Park', time: 10800, rank: 3, avatar: 'EP', streak: 15, weeklyTime: 72000 },
+  //   { name: 'You', time: 200, rank: 4, avatar: 'XD', streak: 7, weeklyTime: 54000 },
+  //   { name: 'Mike Chen', time: 7200, rank: 5, avatar: 'MC', streak: 5, weeklyTime: 46800 },
+  //   { name: 'Lisa Wang', time: 6300, rank: 6, avatar: 'LW', streak: 10, weeklyTime: 43200 },
+  //   { name: 'Tom Davis', time: 5400, rank: 7, avatar: 'TD', streak: 3, weeklyTime: 36000 },
+  // ].sort((a, b) => b.time - a.time).map((f, i) => ({ ...f, rank: i + 1 }));
 
   
 
