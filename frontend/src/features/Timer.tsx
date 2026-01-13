@@ -138,7 +138,7 @@ export default function TimerPage() {
 
                   <div className="absolute inset-0 flex items-center justify-center">
                     <div className="text-center">
-                      <div className="text-5xl font-bold text-purple-950 mb-2">
+                      <div className="text-5xl font-bold text-white mb-2">
                         {formatTime(time)}
                       </div>
                       <div className="text-lg text-gray-600">
