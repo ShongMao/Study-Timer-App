@@ -32,7 +32,7 @@ export default function NavBar() {
       <nav className="h-full flex items-center">
         {/* Change pr-* for the spacing of the navigation links */}
         <div className="ml-auto flex items-center gap-6 pr-6">
-          <NavLink to="/test" className={linkClass}><Timer size={18} />Test</NavLink>
+          {/* <NavLink to="/test" className={linkClass}><Timer size={18} />Test</NavLink> */}
           <NavLink to="/timer" className={linkClass}><Timer size={18} />Timer</NavLink>
           <NavLink to="/subjects" className={linkClass}><Folder size={18} />Subjects</NavLink>
           <NavLink to="/leaderboard" className={linkClass}><Trophy size={18} />Leaderboard</NavLink>
