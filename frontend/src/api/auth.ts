@@ -36,8 +36,8 @@ export async function login( username: string, password: string): Promise<number
   return data.userId;
 }
 
-export async function fetchUser(userId: string) {
-  const res = await fetch(`/v1/user/${userId}/details`);
+export async function fetchUser(userId: number) {
+  const res = await fetch(`${API_BASE}/user/${userId}/details`);
   if (!res.ok) throw new Error("User not found");
   return res.json();
 }

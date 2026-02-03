@@ -41,17 +41,6 @@ export default function LeaderboardPage() {
     return <div className="text-center text-white text-xl mt-20">Loading leaderboard...</div>;
   }
 
-
-  // const friends = [
-  //   { name: 'Sarah Kim', time: 14400, rank: 1, avatar: 'SK', streak: 12, weeklyTime: 75600 },
-  //   { name: 'John Lee', time: 12600, rank: 2, avatar: 'JL', streak: 8, weeklyTime: 68400 },
-  //   { name: 'Emma Park', time: 10800, rank: 3, avatar: 'EP', streak: 15, weeklyTime: 72000 },
-  //   { name: 'You', time: 200, rank: 4, avatar: 'XD', streak: 7, weeklyTime: 54000 },
-  //   { name: 'Mike Chen', time: 7200, rank: 5, avatar: 'MC', streak: 5, weeklyTime: 46800 },
-  //   { name: 'Lisa Wang', time: 6300, rank: 6, avatar: 'LW', streak: 10, weeklyTime: 43200 },
-  //   { name: 'Tom Davis', time: 5400, rank: 7, avatar: 'TD', streak: 3, weeklyTime: 36000 },
-  // ].sort((a, b) => b.time - a.time).map((f, i) => ({ ...f, rank: i + 1 }));
-
   
 
   return (
@@ -60,7 +49,7 @@ export default function LeaderboardPage() {
     }}>
       <div className="max-w-4xl mx-auto p-12 scrollbar-show">
         <div className="text-center mb-12">
-          <h2 className="text-5xl font-bold text-white mb-4">Friend Leaderboard</h2>
+          <h2 className="text-5xl font-bold text-white mb-4">Global Leaderboard</h2>
           <p className="text-xl text-white/80">Today's study time rankings</p>
         </div>
         

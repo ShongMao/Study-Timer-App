@@ -1,5 +1,5 @@
 import express, { Request, Response } from "express";
-import { userRegister, userLogin, addSubject, deleteSubject, getSubjects, userDetails, startTimer, stopTimer, getSubject, getTodayLeaderBoard } from "./app";
+import { userRegister, userLogin, addSubject, deleteSubject, getSubjects, userDetails, startTimer, stopTimer, getSubject, getTodayLeaderBoard, userDetailsUpdate } from "./app";
 import { clearDB } from "./db";
 import config from "../config.json";
 import cors from 'cors';
@@ -57,6 +57,20 @@ app.get("/v1/user/:userId/details", (req: Request, res: Response) => {
   try {
     const user = userDetails(userId);
     res.json(user);
+  } catch (err: any) {
+    res.status(404).json({ error: err.message });
+  }
+});
+
+app.put("/v1/user/:userId/details", (req: Request, res: Response) => {
+  const userId = Number(req.params.userId);
+  if (!userId) {
+    return res.status(400).json({ error: "Invalid userId" });
+  }
+
+  try {
+    const success = userDetailsUpdate(userId);
+    res.status(200).json(success);
   } catch (err: any) {
     res.status(404).json({ error: err.message });
   }

@@ -119,6 +119,14 @@ export function userDetails(userId: number): User {
   };
 }
 
+export function userDetailsUpdate(userId: number) {
+  const user = findUser(userId);
+  if (!user) throw new Error("User not found");
+  
+  return {
+  };
+}
+
 export function getSubjects(userId: number): Subject[] {
   const user = findUser(userId);
   if (!user) {
