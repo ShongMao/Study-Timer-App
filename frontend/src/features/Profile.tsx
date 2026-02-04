@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { User } from 'lucide-react';
-import { fetchUser } from '../api/auth';
+import { fetchUser, updateUser } from '../api/auth';
 
 export default function ProfilePage() {
   // const userId = localStorage.getItem('userId');
@@ -8,7 +8,10 @@ export default function ProfilePage() {
   if (!rawUserId) throw new Error('Not logged in');
   const userId = Number(rawUserId);
 
+  const [displayUsername, setDisplayUsername] = useState<string>("My");
   const [username, setUsername] = useState<string>("My");
+
+  const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -20,6 +23,7 @@ export default function ProfilePage() {
       try {
         const user = await fetchUser(userId);
         setUsername(user.username);
+        setDisplayUsername(user.username);
       } catch (err) {
         console.error('Failed to fetch user:', err);
       } finally {
@@ -28,6 +32,27 @@ export default function ProfilePage() {
     };
     loadUser();
   }, [userId]);
+
+  const handleSave = async () => {
+    try {
+      if (username.trim() === "") {
+        alert("Username cannot be empty");
+        return;
+      }
+      const updated = await updateUser(userId, {
+        username,
+        password
+      });
+      setUsername(updated.username);
+      setDisplayUsername(updated.username);
+      setPassword("");
+      alert("Profile updated successfully!");
+    
+    } catch (err) {
+      console.error("Updates failed: ", err);
+      alert("Failed to update profile.");
+    }
+  }
 
   return (
     <div className="min-h-screen flex items-center justify-center" style={{
@@ -42,7 +67,7 @@ export default function ProfilePage() {
 
           {/* Title */}
           <h2 className="text-2xl font-bold text-gray-800 mb-6 text-center">
-            {loading ? 'Loading...' : `${username}'s Profile`}
+            {loading ? 'Loading...' : `${displayUsername}'s Profile`}
           </h2>
 
           {/* Profile fields */}
@@ -55,6 +80,7 @@ export default function ProfilePage() {
               <input
                 type="text"
                 placeholder="your_username"
+                value={username}
                 onChange={(e) => setUsername(e.target.value)}
                 className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-purple-500"
               />
@@ -67,6 +93,8 @@ export default function ProfilePage() {
               <input
                 type="password"
                 placeholder="••••••••"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
                 className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-purple-500"
               />
             </div>
@@ -75,7 +103,10 @@ export default function ProfilePage() {
 
           {/* Save button */}
           <div className="flex justify-center mt-6">
-            <button className="w-32 bg-purple-700 hover:bg-purple-800 text-white font-semibold py-2 rounded-lg transition">
+            <button 
+              onClick={handleSave}
+              className="w-32 bg-purple-700 hover:bg-purple-800 text-white font-semibold py-2 rounded-lg transition"
+            >
               Save
             </button>
           </div>

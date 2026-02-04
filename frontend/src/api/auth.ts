@@ -41,3 +41,22 @@ export async function fetchUser(userId: number) {
   if (!res.ok) throw new Error("User not found");
   return res.json();
 }
+
+export async function updateUser(userId: number, updates: {
+    username?: string;
+    password?: string;
+  }) {
+  const res = await fetch(`${API_BASE}/user/${userId}/details`, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(updates),
+  });
+  if (!res.ok) {
+    const err = await res.json();
+    throw new Error(err.error || "Failed to update user");
+
+  }
+  return res.json();
+}

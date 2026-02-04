@@ -64,13 +64,16 @@ app.get("/v1/user/:userId/details", (req: Request, res: Response) => {
 
 app.put("/v1/user/:userId/details", (req: Request, res: Response) => {
   const userId = Number(req.params.userId);
+  const updates = req.body;
+  console.log(updates);
+
   if (!userId) {
     return res.status(400).json({ error: "Invalid userId" });
   }
 
   try {
-    const success = userDetailsUpdate(userId);
-    res.status(200).json(success);
+    const updatedUser = userDetailsUpdate(userId, updates);
+    res.status(200).json(updatedUser);
   } catch (err: any) {
     res.status(404).json({ error: err.message });
   }
