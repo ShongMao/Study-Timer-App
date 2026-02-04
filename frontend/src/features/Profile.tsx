@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { User } from 'lucide-react';
 import { fetchUser, updateUser } from '../api/auth';
+import { useNavigate } from 'react-router-dom';
 
 export default function ProfilePage() {
   // const userId = localStorage.getItem('userId');
@@ -13,6 +14,13 @@ export default function ProfilePage() {
 
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
+
+
+  const handleLogout = () => {
+    localStorage.removeItem("userId");
+    navigate("/login");
+  };
 
   useEffect(() => {
     const loadUser = async () => {
@@ -102,12 +110,19 @@ export default function ProfilePage() {
           </div>
 
           {/* Save button */}
-          <div className="flex justify-center mt-6">
+          <div className="flex justify-center mt-6 gap-20">
             <button 
               onClick={handleSave}
               className="w-32 bg-purple-700 hover:bg-purple-800 text-white font-semibold py-2 rounded-lg transition"
             >
               Save
+            </button>
+
+            <button
+              onClick={handleLogout}
+              className="w-32 bg-gray-600 hover:bg-gray-700 text-white font-semibold py-2 rounded-lg transition"
+            >
+              Logout
             </button>
           </div>
         </div>
