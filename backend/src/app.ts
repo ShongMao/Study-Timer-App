@@ -8,17 +8,7 @@ export function userRegister(email: string, password: string, username: string):
     throw new Error('Invalid email');
   }
 
-  if (password.length < 4) {
-    throw new Error('Password must be at least 4 characters long');
-  }
-
-  if (!/[A-Z]/.test(password)) {
-    throw new Error('Password must contain a capital letter');
-  }
-
-  if (!/[0-9]/.test(password)) {
-    throw new Error('Password must contain a number');
-  }
+  passwordIsValid(password);
 
   const existingUser = db.users.find(u => u.email === email);
   if (existingUser) {
@@ -109,6 +99,37 @@ export function userDetails(userId: number): User {
   const user = findUser(userId);
   if (!user) throw new Error("User not found");
   
+  return {
+    id: user.id,
+    email: user.email,
+    username: user.username,
+    subjects: user.subjects,
+    ...(user.lastStudyDay && { lastStudyDay: user.lastStudyDay }),
+    studyStreak: user.studyStreak
+  };
+}
+
+export function userDetailsUpdate(userId: number, updates: {
+    username?: string;
+    password?: string;
+  }): User {
+
+  const user = findUser(userId);
+  if (!user) throw new Error("User not found");
+  
+  if (updates.username !== undefined) {
+    if (updates.username.trim() === "") {
+      throw new Error("Username cannot be empty");
+    }
+    user.username = updates.username;
+  }
+
+  if (updates.password !== undefined) {
+    passwordIsValid(updates.password);
+
+    user.password = updates.password
+  }
+
   return {
     id: user.id,
     email: user.email,
@@ -233,4 +254,18 @@ export function getTodayLeaderBoard(limit: number) {
     })
     .sort((a, b) => b.totalTodaySeconds - a.totalTodaySeconds)
     .slice(0, limit);
+}
+
+export function passwordIsValid(password: string) {
+  if (password.length < 4) {
+    throw new Error('Password must be at least 4 characters long');
+  }
+
+  if (!/[A-Z]/.test(password)) {
+    throw new Error('Password must contain a capital letter');
+  }
+
+  if (!/[0-9]/.test(password)) {
+    throw new Error('Password must contain a number');
+  }
 }

@@ -5,12 +5,12 @@ import ProtectedRoute from './ProtectedRoute';
 
 // The following imports are commented because we have not created these pages yet.
 // import StatisticsPage from '@/features/statistics/StatisticsPage';
-// import ProfilePage from '@/features/profile/ProfilePage';
 import LoginPage from '../features/Login';
 import SignupPage from '../features/Signup';
 import TimerPage from '../features/Timer';
 import SubjectsPage from '../features/Subjects';
 import LeaderboardPage from '../features/Leaderboard';
+import ProfilePage from '../features/Profile';
 
 export default function AppRouter() {
   return (
@@ -52,6 +52,15 @@ export default function AppRouter() {
             </ProtectedRoute>
           }
         />
+        <Route
+          path="/profile"
+          element={
+            <ProtectedRoute>
+              <ProfilePage />
+            </ProtectedRoute>
+          }
+        />
+
       </Route>
 
       {/* Fallback */}
