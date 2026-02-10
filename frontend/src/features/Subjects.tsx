@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { fetchSubjects, addSubject, deleteSubject } from '../api/subject';
 import type { Subject } from '../api/subject';
 import { Trash2, Pencil } from "lucide-react";
+import CourseSelector from '../shared/components/CourseSelector';
 
 const SUBJECT_COLOR_KEY = 'subjectColors';
 
@@ -91,6 +92,7 @@ export default function SubjectsPage() {
       const subject = await addSubject(userId, newSubjectName);
       setSubjects((prev) => [...prev, subject]);
       setNewSubjectName("");
+      setError("")
     } catch (err: any) {
       setError(err.message);
     }
@@ -126,7 +128,7 @@ export default function SubjectsPage() {
         {error && <p className="text-red-600 text-center mb-4">{error}</p>}
 
         {/* Input field and add button */}
-        <div className="flex justify-center mb-15">
+        <div className="flex justify-center mb-15 gap-8 items-end">
           <div className="flex rounded-xl shadow-md overflow-hidden">
             <input
               type="text"
@@ -159,6 +161,16 @@ export default function SubjectsPage() {
               Add
             </button>
           </div>
+
+          <CourseSelector
+            userId={userId!}
+            onCourseAdded={loadSubjects}
+            onClearCustomInput={() => {
+              setNewSubjectName("");
+              setError("");
+            }}
+          />
+          
         </div>
 
         <div className="flex justify-center">

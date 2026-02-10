@@ -65,7 +65,6 @@ app.get("/v1/user/:userId/details", (req: Request, res: Response) => {
 app.put("/v1/user/:userId/details", (req: Request, res: Response) => {
   const userId = Number(req.params.userId);
   const updates = req.body;
-  console.log(updates);
 
   if (!userId) {
     return res.status(400).json({ error: "Invalid userId" });
