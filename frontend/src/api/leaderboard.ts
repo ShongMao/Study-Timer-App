@@ -9,7 +9,7 @@ export interface LeaderboardUser {
 
 export async function fetchTodayLeaderboard(limit = 10): Promise<LeaderboardUser[]> {
   const res = await fetch(
-    `${API_BASE}/v1/leaderboard/users?limit=${limit}`
+    `${API_BASE}/v2/leaderboard/users?limit=${limit}`
   );
 
   const data = await res.json();

@@ -270,6 +270,19 @@ export async function V2userRegister(email: string, password: string, username: 
   }
 
   passwordIsValid(password);
+
+  if (!username || username.trim() === "") {
+    throw new Error("Username cannot be empty");
+  }
+
+  const [existing] = await pool.query<RowDataPacket[]>(
+    `SELECT id FROM users WHERE email = ?`,
+    [email]
+  );
+
+  if (existing.length > 0) {
+    throw new Error("Email already registered");
+  }
   
   const [result] = await pool.query(
     `INSERT INTO users (email, username, password)

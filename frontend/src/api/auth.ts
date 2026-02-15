@@ -1,7 +1,7 @@
-const API_BASE = "http://localhost:3200/v1";
+const API_BASE = "http://localhost:3200";
 
 export async function register(email: string, username: string, password: string): Promise<number> {
-  const response = await fetch(`${API_BASE}/user/register`, {
+  const response = await fetch(`${API_BASE}/v2/user/register`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -19,7 +19,7 @@ export async function register(email: string, username: string, password: string
 }
 
 export async function login( username: string, password: string): Promise<number> {
-  const response = await fetch(`${API_BASE}/user/login`, {
+  const response = await fetch(`${API_BASE}/v2/user/login`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -37,7 +37,7 @@ export async function login( username: string, password: string): Promise<number
 }
 
 export async function fetchUser(userId: number) {
-  const res = await fetch(`${API_BASE}/user/${userId}/details`);
+  const res = await fetch(`${API_BASE}/v2/user/${userId}/details`);
   if (!res.ok) throw new Error("User not found");
   return res.json();
 }
@@ -46,7 +46,7 @@ export async function updateUser(userId: number, updates: {
     username?: string;
     password?: string;
   }) {
-  const res = await fetch(`${API_BASE}/user/${userId}/details`, {
+  const res = await fetch(`${API_BASE}/v2/user/${userId}/details`, {
     method: 'PUT',
     headers: {
       'Content-Type': 'application/json',
