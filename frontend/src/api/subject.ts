@@ -11,7 +11,7 @@ const API_BASE = "http://localhost:3200";
 
 // Fetch all subjects for a user
 export async function fetchSubjects(userId: string): Promise<Subject[]> {
-  const res = await fetch(`${API_BASE}/v1/user/${userId}/subjects`);
+  const res = await fetch(`${API_BASE}/v2/user/${userId}/subjects`);
   const data = await res.json();
   if (!res.ok) throw new Error(data.error || "Failed to fetch subjects");
   return data.subjects;
@@ -19,7 +19,7 @@ export async function fetchSubjects(userId: string): Promise<Subject[]> {
 
 // Add a new subject
 export async function addSubject(userId: string, name: string): Promise<Subject> {
-  const res = await fetch(`${API_BASE}/v1/user/${userId}/subject`, {
+  const res = await fetch(`${API_BASE}/v2/user/${userId}/subject`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ name }),
@@ -31,7 +31,7 @@ export async function addSubject(userId: string, name: string): Promise<Subject>
 
 // Delete a subject
 export async function deleteSubject(userId: string, subjectId: number): Promise<void> {
-  const res = await fetch(`${API_BASE}/v1/user/${userId}/subject/${subjectId}`, {
+  const res = await fetch(`${API_BASE}/v2/user/${userId}/subject/${subjectId}`, {
     method: "DELETE",
   });
   const data = await res.json();
