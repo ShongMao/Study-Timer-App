@@ -20,7 +20,6 @@ export interface Subject {
 export interface StudySession {
   id: number;
   userId: number;
-
   subjectId: number;
   startTime: number; // unix timestamp (ms)
   endTime?: number;   // unix timestamp (ms)
