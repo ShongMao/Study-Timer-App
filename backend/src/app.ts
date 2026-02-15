@@ -1,5 +1,6 @@
 import { db, User, Subject, StudySession } from './db';
 import { findUser, getTodayKey, getYesterdayKey } from './helper';
+import { pool } from "./database" 
 
 export function userRegister(email: string, password: string, username: string): number {
   const regex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
@@ -268,4 +269,62 @@ export function passwordIsValid(password: string) {
   if (!/[0-9]/.test(password)) {
     throw new Error('Password must contain a number');
   }
+}
+
+// ============================= V2 Functions ==================================
+
+export async function V2userRegister(email: string, password: string, username: string): Promise<number> {
+  const [result] = await pool.query(
+    `INSERT INTO users (email, username, password)
+     VALUES (?, ?, ?)`,
+    [email, username, password]
+  );
+
+  return (result as any).insertId;
+}
+
+export async function V2userLogin(username: string, password: string): Promise<number> {
+  if (!username || !password) {
+    throw new Error('Username and password are required');
+  }
+
+  const [rows] = await pool.query(
+    `SELECT * FROM users WHERE username = ?`,
+    [username]
+  );
+
+  const user = (rows as any[])[0];
+
+  if (!user) {
+    throw new Error('User does not exist');
+  }
+
+  if (user.password !== password) {
+    throw new Error('Incorrect password');
+  }
+
+  return user.id;
+}
+
+export async function V2addSubject(userId: number, name: string): Promise<number> {
+  const normalizedName = name.trim().toLowerCase();
+
+  // Check if subject already exists for this user
+  const [existing] = await pool.query(
+    `SELECT * FROM subjects WHERE userId = ? AND LOWER(name) = ?`,
+    [userId, normalizedName]
+  );
+
+  if ((existing as any[]).length > 0) {
+    throw new Error("Subject already exists");
+  }
+
+  // Insert new subject
+  const today = new Date().toISOString().slice(0, 10); // YYYY-MM-DD
+  const [result] = await pool.query(
+    `INSERT INTO subjects (userId, name, lastUpdatedDay) VALUES (?, ?, ?)`,
+    [userId, name, today]
+  );
+
+  return (result as any).insertId;
 }

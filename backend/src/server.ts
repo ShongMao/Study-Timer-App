@@ -1,5 +1,7 @@
 import express, { Request, Response } from "express";
-import { userRegister, userLogin, addSubject, deleteSubject, getSubjects, userDetails, startTimer, stopTimer, getSubject, getTodayLeaderBoard, userDetailsUpdate } from "./app";
+import { userRegister, userLogin, addSubject, deleteSubject, getSubjects, userDetails, startTimer, stopTimer, getSubject, getTodayLeaderBoard, userDetailsUpdate,
+  V2userRegister, V2userLogin, V2addSubject
+ } from "./app";
 import { clearDB } from "./db";
 import config from "../config.json";
 import cors from 'cors';
@@ -217,6 +219,61 @@ app.delete('/v1/clear', (_req: Request, res: Response) => {
   clearDB();
   res.status(200).json({});
 });
+
+// ============================= V2 ROUTES ==================================
+
+app.post('/v2/user/register', async (req: Request, res: Response) => {
+  const { email, password, username } = req.body;
+
+  try {
+    const userId = await V2userRegister(email, password, username);
+    res.status(200).json({ userId });
+  } catch (err) {
+    if (err instanceof Error) {
+      res.status(400).json({ error: err.message }); 
+    } else {
+      res.status(400).json({ error: 'Unknown error occured' }); 
+    }
+  }
+})
+
+app.post('/v2/user/login', async (req: Request, res: Response) => {
+  const { username, password } = req.body;
+
+  try {
+    const userId = await V2userLogin(username, password);
+    res.status(200).json({ userId });
+  } catch (err) {
+    if (err instanceof Error) {
+      res.status(400).json({ error: err.message }); 
+    } else {
+      res.status(400).json({ error: 'Unknown error occured' }); 
+    }
+  }
+})
+
+// Create a new subject
+app.post('/v1/user/:userId/subject', async (req: Request, res: Response) => {
+  const userId = Number(req.params.userId);
+  const {name} = req.body;
+
+  if (!name || typeof name !== 'string') {
+    res.status(400).json({ error: "Subject name is required" });
+    return;
+  }
+
+  try {
+    const subjectId = await V2addSubject(userId, name);
+    res.status(201).json({ subjectId });
+  } catch (err) {
+    if (err instanceof Error) {
+      res.status(400).json({ error: err.message });
+    } else {
+      res.status(400).json({ error: "Unknown error occurred" });
+    }
+  }
+})
+
 
 
 // ===========================================================================
