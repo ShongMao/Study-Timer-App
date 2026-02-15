@@ -1,6 +1,6 @@
 import express, { Request, Response } from "express";
 import { userRegister, userLogin, addSubject, deleteSubject, getSubjects, userDetails, startTimer, stopTimer, getSubject, getTodayLeaderBoard, userDetailsUpdate,
-  V2userRegister, V2userLogin, V2addSubject
+  V2userRegister, V2userLogin, V2addSubject, V2userDetails, V2userDetailsUpdate, V2getSubjects, V2getSubject, V2startTimer, V2stopTimer, V2getTodayLeaderBoard
  } from "./app";
 import { clearDB } from "./db";
 import config from "../config.json";
@@ -252,8 +252,40 @@ app.post('/v2/user/login', async (req: Request, res: Response) => {
   }
 })
 
+// Get user details
+app.get("/v2/user/:userId/details", async (req: Request, res: Response) => {
+  const userId = Number(req.params.userId);
+  if (!userId) {
+    return res.status(400).json({ error: "Invalid userId" });
+  }
+  
+  try {
+    const user = await V2userDetails(userId);
+    res.json(user);
+  } catch (err: any) {
+    res.status(404).json({ error: err.message });
+  }
+});
+
+// Update user details
+app.put("/v2/user/:userId/details", async (req: Request, res: Response) => {
+  const userId = Number(req.params.userId);
+  const updates = req.body;
+  
+  if (!userId) {
+    return res.status(400).json({ error: "Invalid userId" });
+  }
+  
+  try {
+    const updatedUser = await V2userDetailsUpdate(userId, updates);
+    res.status(200).json(updatedUser);
+  } catch (err: any) {
+    res.status(404).json({ error: err.message });
+  }
+});
+
 // Create a new subject
-app.post('/v1/user/:userId/subject', async (req: Request, res: Response) => {
+app.post('/v2/user/:userId/subject', async (req: Request, res: Response) => {
   const userId = Number(req.params.userId);
   const {name} = req.body;
 
@@ -274,7 +306,98 @@ app.post('/v1/user/:userId/subject', async (req: Request, res: Response) => {
   }
 })
 
+// Retrieve all subjects
+app.get('/v2/user/:userId/subjects', async (req: Request, res: Response) => {
+  const userId = Number(req.params.userId);
 
+  try {
+    const subjects = await V2getSubjects(userId);
+    res.status(200).json({ subjects: subjects });
+  } catch (err) {
+    if (err instanceof Error) {
+      if (err.message === 'User not found') {
+        res.status(404).json({ error: err.message });
+      } else {
+        res.status(400).json({ error: err.message });
+      }
+    } else {
+      res.status(400).json({ error: "Unknown error occurred" });
+    }
+  }
+});
+
+// Get specific subject
+app.get('/v2/timer/:userId/subject/:subjectId', async (req: Request, res: Response) => {
+  const userId = Number(req.params.userId);
+  const subjectId = Number(req.params.subjectId);
+
+  try {
+    const subject = await V2getSubject(userId, subjectId);
+    return res.status(200).json({ subject });
+  } catch (err) {
+    if (err instanceof Error) {
+      if (err.message === 'User not found') {
+        res.status(404).json({ error: err.message });
+      } else if (err.message === 'Subject not found for user') {
+        res.status(404).json({ error: err.message });
+      }
+    } else {
+      res.status(400).json({ error: "Unknown error occurred" });
+    }
+  }
+});
+
+// Start timer
+app.post('/v2/timer/start', async (req: Request, res: Response) => {
+  const { userId, subjectId } = req.body;
+  const numberId = Number(userId);
+  try {
+    await V2startTimer(numberId, subjectId);
+    return res.status(200).json({ success: true });
+  } catch (err) {
+    if (err instanceof Error) {
+      if (err.message === 'User not found') {
+        res.status(404).json({ error: err.message });
+      } else {
+        res.status(400).json({ error: err.message });
+      }
+    } else {
+      res.status(400).json({ error: "Unknown error occurred" });
+    }
+  }
+});
+
+// Stop timer
+app.post('/v2/timer/stop', async (req: Request, res: Response) => {
+  const userId = Number(req.body.userId);
+
+  try {
+    await V2stopTimer(userId);
+    return res.status(200).json({ success: true });
+  } catch (err) {
+    if (err instanceof Error) {
+      if (err.message === 'User not found') {
+        res.status(404).json({ error: err.message });
+      } else {
+        res.status(400).json({ error: err.message });
+      }
+    } else {
+      res.status(400).json({ error: "Unknown error occurred" });
+    }
+  }
+});
+
+// Get the leaderboard
+app.get('/v2/leaderboard/users', async (req: Request, res: Response) => {
+  const limit = Number(req.query.limit) || 7;
+
+  try {
+    const leaderboard = await V2getTodayLeaderBoard(limit);
+    return res.status(200).json({ leaderboard });
+  } catch (err) {
+    res.status(400).json({ error: "Unknown error occurred" });
+  }
+})
 
 // ===========================================================================
 // ============================= ROUTES ABOVE ================================
