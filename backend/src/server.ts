@@ -3,7 +3,7 @@ import { userRegister, userLogin, addSubject, deleteSubject, getSubjects, userDe
   V2userRegister, V2userLogin, V2addSubject, V2userDetails, V2userDetailsUpdate, V2getSubjects, V2getSubject, V2startTimer, V2stopTimer, V2getTodayLeaderBoard
  } from "./app";
 import { clearDB } from "./db";
-import config from "../config.json";
+
 import cors from 'cors';
 import morgan from 'morgan';
 
@@ -12,8 +12,7 @@ app.use(express.json());
 app.use(cors());
 app.use(morgan('dev'));
 
-const PORT = parseInt(process.env.PORT || config.port);
-const HOST = process.env.IP || "127.0.0.1";
+
 
 
 // ===========================================================================
@@ -403,16 +402,4 @@ app.get('/v2/leaderboard/users', async (req: Request, res: Response) => {
 // ============================= ROUTES ABOVE ================================
 // ===========================================================================
 
-export const server = app.listen(PORT, HOST, () => {
-  console.log(`Server is running on http://${HOST}:${PORT}`);
-});
-
-// Graceful shutdown handling
-process.on("SIGINT", () => {
-  // Clear any memory in the database
-  clearDB();
-  server.close(() => {
-    console.log("Shutting down server gracefully.");
-    process.exit();
-  });
-});
+export default app;

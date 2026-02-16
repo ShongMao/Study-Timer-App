@@ -1,4 +1,6 @@
-const API_BASE = "http://localhost:3200";
+const API_BASE =
+  import.meta.env.VITE_API_BASE_URL || "http://localhost:3200";
+
 
 export interface LeaderboardUser {
   userId: number;

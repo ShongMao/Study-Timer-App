@@ -5,7 +5,9 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "ts-node src/server.ts"
+    "dev": "ts-node src/local.ts",
+    "build": "tsc",
+    "start": "node dist/local.js"
   },
   "keywords": [],
   "author": "",
@@ -20,6 +22,7 @@
     "typescript": "^5.9.3"
   },
   "dependencies": {
+    "@vercel/node": "^5.6.3",
     "cors": "^2.8.5",
     "dotenv": "^17.3.1",
     "express": "^5.1.0",
