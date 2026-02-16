@@ -1,4 +1,6 @@
-const API_BASE = "http://localhost:3200";
+const API_BASE =
+  import.meta.env.VITE_API_BASE_URL || "http://localhost:3200";
+
 
 export async function register(email: string, username: string, password: string): Promise<number> {
   const response = await fetch(`${API_BASE}/v2/user/register`, {

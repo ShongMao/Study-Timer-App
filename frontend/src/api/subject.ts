@@ -7,7 +7,9 @@ export interface Subject {
   sessionIds: number[];
 }
 
-const API_BASE = "http://localhost:3200";
+const API_BASE =
+  import.meta.env.VITE_API_BASE_URL || "http://localhost:3200";
+
 
 // Fetch all subjects for a user
 export async function fetchSubjects(userId: string): Promise<Subject[]> {
