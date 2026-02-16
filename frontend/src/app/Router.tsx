@@ -11,6 +11,8 @@ import TimerPage from '../features/Timer';
 import SubjectsPage from '../features/Subjects';
 import LeaderboardPage from '../features/Leaderboard';
 import ProfilePage from '../features/Profile';
+import StatisticsPage from '../features/Statistics';
+import FriendsPage from '../features/Friends';
 
 export default function AppRouter() {
   return (
@@ -45,6 +47,14 @@ export default function AppRouter() {
           }
         />
         <Route
+          path="/friends"
+          element={
+            <ProtectedRoute>
+              <FriendsPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
           path="/leaderboard"
           element={
             <ProtectedRoute>
@@ -57,6 +67,14 @@ export default function AppRouter() {
           element={
             <ProtectedRoute>
               <ProfilePage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/statistics"
+          element={
+            <ProtectedRoute>
+              <StatisticsPage />
             </ProtectedRoute>
           }
         />

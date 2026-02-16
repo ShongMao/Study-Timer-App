@@ -5,7 +5,7 @@ import {
   Trophy,
   BarChart3,
   User,
-  Coffee
+  Contact
 } from "lucide-react";
 
 export default function NavBar() {
@@ -22,7 +22,7 @@ export default function NavBar() {
     <header className="sticky top-0 left-0 right-0 h-16 bg-white shadow-sm z-50 flex items-center overflow-x-auto scrollbar-hide">
       {/* Container for the logo (TODO) */}
       <nav className="ml-4 flex items-center gap-2">
-        <NavLink to="/timer" className="flex items-center gap-2 transition-colors px-4 py-2 rounded-xl"><Coffee size={28} />Logo</NavLink>
+        <NavLink to="/timer" className="flex items-center gap-2 transition-colors px-4 py-2 rounded-xl text-xl">Larkin</NavLink>
       </nav>
 
       {/* Spacer to push nav links to the right */}
@@ -36,6 +36,7 @@ export default function NavBar() {
           <NavLink to="/timer" className={linkClass}><Timer size={18} />Timer</NavLink>
           <NavLink to="/subjects" className={linkClass}><Folder size={18} />Subjects</NavLink>
           <NavLink to="/leaderboard" className={linkClass}><Trophy size={18} />Leaderboard</NavLink>
+          <NavLink to="/friends" className={linkClass}><Contact size={18} />Friends</NavLink>
           <NavLink to="/statistics" className={linkClass}><BarChart3 size={18} />Statistics</NavLink>
           <NavLink to="/profile" className={linkClass}><User size={18} />Profile</NavLink>
         </div>
