@@ -22,7 +22,7 @@ export default function NavBar() {
     <header className="sticky top-0 left-0 right-0 h-16 bg-white shadow-sm z-50 flex items-center overflow-x-auto scrollbar-hide">
       {/* Container for the logo (TODO) */}
       <nav className="ml-4 flex items-center gap-2">
-        <NavLink to="/timer" className="flex items-center gap-2 transition-colors px-4 py-2 rounded-xl text-xl">Larkin</NavLink>
+        <NavLink to="/timer" className="flex items-center gap-2 transition-colors px-4 py-2 rounded-xl text-xl">Lakin</NavLink>
       </nav>
 
       {/* Spacer to push nav links to the right */}

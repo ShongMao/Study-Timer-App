@@ -33,7 +33,7 @@ export default function LoginPage() {
           <div className="inline-block p-6 bg-white rounded-full mb-6 shadow-2xl">
             <Clock size={64} className="text-amber-800" />
           </div>
-          <h1 className="text-6xl font-bold text-white mb-4">Larkin</h1>
+          <h1 className="text-6xl font-bold text-white mb-4">Lakin</h1>
           <p className="text-xl text-white/90">Focus. Track. Achieve.</p>
         </div>
         

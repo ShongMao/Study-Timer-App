@@ -3,8 +3,6 @@ import { Routes, Route, Navigate } from 'react-router-dom';
 import AppLayout from '../shared/components/AppLayout';
 import ProtectedRoute from './ProtectedRoute';
 
-// The following imports are commented because we have not created these pages yet.
-// import StatisticsPage from '@/features/statistics/StatisticsPage';
 import LoginPage from '../features/Login';
 import SignupPage from '../features/Signup';
 import TimerPage from '../features/Timer';

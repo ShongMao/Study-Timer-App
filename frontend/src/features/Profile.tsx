@@ -128,8 +128,25 @@ export default function ProfilePage() {
         </div>
 
         <div className="w-1/2 h-full flex flex-col gap-4">
-          <div className="h-1/2 bg-gray-400 rounded-2xl"></div>
-          <div className="h-1/2 bg-gray-400 rounded-2xl"></div>
+          {/* Achievements Box */}
+          <div className="h-1/2 bg-gray-400 rounded-2xl flex flex-col items-center justify-center p-6">
+            <h3 className="text-2xl font-bold text-white mb-2">
+              Achievements
+            </h3>
+            <p className="text-lg text-gray-100 italic">
+              Coming soon...
+            </p>
+          </div>
+
+          {/* Coming Soon Box */}
+          <div className="h-1/2 bg-gray-400 rounded-2xl flex flex-col items-center justify-center p-6">
+            <h3 className="text-2xl font-bold text-white mb-2">
+              Theme
+            </h3>
+            <p className="text-lg text-gray-100 italic">
+              Coming soon...
+            </p>
+          </div>
         </div>
 
 
