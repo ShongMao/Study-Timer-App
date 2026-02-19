@@ -1,5 +1,5 @@
 import { db, User, Subject, StudySession } from './db';
-import { findUser, getTodayKey, getYesterdayKey, passwordIsValid } from './helper';
+import { findUser, getTodayKey, getYesterdayKey, passwordIsValid, generateFriendCode } from './helper';
 import { pool } from "./database" 
 import { RowDataPacket } from 'mysql2';
 
@@ -283,11 +283,13 @@ export async function V2userRegister(email: string, password: string, username: 
   if (existing.length > 0) {
     throw new Error("Email already registered");
   }
+
+  let friendCode = await generateFriendCode();
   
   const [result] = await pool.query(
-    `INSERT INTO users (email, username, password)
-     VALUES (?, ?, ?)`,
-    [email, username, password]
+    `INSERT INTO users (email, username, password, friendCode)
+     VALUES (?, ?, ?, ?)`,
+    [email, username, password, friendCode]
   );
 
   return (result as any).insertId;
@@ -320,7 +322,7 @@ export async function V2userDetails(userId: number) {
   
   // Get user
   const [userRows] = await pool.query(
-    `SELECT id, email, username, lastStudyDay, studyStreak
+    `SELECT id, email, username, friendCode, lastStudyDay, studyStreak
     FROM users WHERE id = ?`,
     [userId]
   );
@@ -604,4 +606,186 @@ export async function V2getTodayLeaderBoard(limit: number) {
     totalTodaySeconds: row.totalTodaySeconds as number,
     studyStreak: row.studyStreak as number,
   }));
+}
+
+export async function searchUserByFriendCode(code: string) {
+  const [rows] = await pool.query<RowDataPacket[]>(
+    `SELECT id, username, friendCode
+     FROM users
+     WHERE friendCode = ?`,
+    [code]
+  );
+
+  if (rows.length === 0) {
+    throw new Error("User not found");
+  }
+
+  return rows[0];
+}
+
+export async function sendFriendRequest(
+  fromUserId: number,
+  friendCode: string
+) {
+  const [target] = await pool.query<RowDataPacket[]>(
+    `SELECT id FROM users WHERE friendCode = ?`,
+    [friendCode]
+  );
+
+  if (target.length === 0) {
+    throw new Error("User not found");
+  }
+
+  const toUserId = target[0]!.id;
+
+  if (fromUserId === toUserId) {
+    throw new Error("Cannot add yourself");
+  }
+
+  await pool.query(
+    `INSERT INTO friend_requests (fromUserId, toUserId)
+     VALUES (?, ?)`,
+    [fromUserId, toUserId]
+  );
+
+  return { success: true };
+}
+
+export async function acceptFriendRequest(requestId: number, userId: number) {
+  const [rows] = await pool.query<RowDataPacket[]>(
+    `SELECT * FROM friend_requests
+     WHERE id = ? AND toUserId = ? AND status = 'pending'`,
+    [requestId, userId]
+  );
+
+  if (rows.length === 0) {
+    throw new Error("Request not found");
+  }
+
+  const reqRow = rows[0];
+
+  if (!reqRow) {
+    throw new Error("Request not found");
+  }
+
+  const user1 = Math.min(reqRow.fromUserId, reqRow.toUserId);
+  const user2 = Math.max(reqRow.fromUserId, reqRow.toUserId);
+
+  await pool.query(
+    `INSERT INTO friends (user1, user2)
+     VALUES (?, ?)`,
+    [user1, user2]
+  );
+
+  await pool.query(
+    `UPDATE friend_requests
+     SET status = 'accepted'
+     WHERE id = ?`,
+    [requestId]
+  );
+
+  return { success: true };
+}
+
+export async function listFriends(userId: number) {
+  const [rows] = await pool.query<RowDataPacket[]>(
+    `
+    SELECT u.id, u.username, u.friendCode
+    FROM friends f
+    JOIN users u
+      ON u.id = IF(f.user1 = ?, f.user2, f.user1)
+    WHERE f.user1 = ? OR f.user2 = ?
+    `,
+    [userId, userId, userId]
+  );
+
+  return rows;
+}
+
+
+export async function getFriendRequests(userId: number) {
+  const [rows] = await pool.query<RowDataPacket[]>(
+    `
+    SELECT 
+      fr.id AS requestId,
+      fr.fromUserId,
+      u.username,
+      u.friendCode,
+      fr.createdAt
+    FROM friend_requests fr
+    JOIN users u
+      ON fr.fromUserId = u.id
+    WHERE fr.toUserId = ?
+      AND fr.status = 'pending'
+    ORDER BY fr.createdAt DESC
+    `,
+    [userId]
+  );
+
+  return rows;
+}
+
+export async function declineFriendRequest(
+  requestId: number,
+  userId: number
+) {
+  // Ensure request exists and belongs to this user
+  const [rows] = await pool.query<RowDataPacket[]>(
+    `
+    SELECT * FROM friend_requests
+    WHERE id = ?
+      AND toUserId = ?
+      AND status = 'pending'
+    `,
+    [requestId, userId]
+  );
+
+  if (rows.length === 0) {
+    throw new Error("Friend request not found");
+  }
+
+  // Update status
+  await pool.query(
+    `
+    UPDATE friend_requests
+    SET status = 'declined'
+    WHERE id = ?
+    `,
+    [requestId]
+  );
+
+  return { success: true };
+}
+
+export async function removeFriend(userId: number, friendId: number) {
+  if (userId === friendId) {
+    throw new Error("You cannot remove yourself");
+  }
+
+  const user1 = Math.min(userId, friendId);
+  const user2 = Math.max(userId, friendId);
+
+  // Check friendship exists
+  const [rows] = await pool.query<RowDataPacket[]>(
+    `
+    SELECT * FROM friends
+    WHERE user1 = ? AND user2 = ?
+    `,
+    [user1, user2]
+  );
+
+  if (rows.length === 0) {
+    throw new Error("Friendship not found");
+  }
+
+  // Delete friendship
+  await pool.query(
+    `
+    DELETE FROM friends
+    WHERE user1 = ? AND user2 = ?
+    `,
+    [user1, user2]
+  );
+
+  return { success: true };
 }
