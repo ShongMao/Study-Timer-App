@@ -1,4 +1,6 @@
 import { db, User } from './db'
+import { pool } from './database';
+import { RowDataPacket } from 'mysql2';
 
 export function findUser(userId: number): User | null {
   const user = db.users.find(u => u.id == userId);
@@ -27,5 +29,27 @@ export function passwordIsValid(password: string) {
 
   if (!/[0-9]/.test(password)) {
     throw new Error('Password must contain a number');
+  }
+}
+
+export async function generateFriendCode(): Promise<string> {
+  const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+
+  while (true) {
+    let code = "";
+
+    for (let i = 0; i < 8; i++) {
+      code += chars[Math.floor(Math.random() * chars.length)];
+    }
+
+    // Check uniqueness in DB
+    const [check] = await pool.query<RowDataPacket[]>(
+      `SELECT id FROM users WHERE friendCode = ?`,
+      [code]
+    );
+
+    if (check.length === 0) {
+      return code;
+    }
   }
 }

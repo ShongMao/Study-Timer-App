@@ -1,6 +1,7 @@
 import express, { Request, Response } from "express";
 import { userRegister, userLogin, addSubject, deleteSubject, getSubjects, userDetails, startTimer, stopTimer, getSubject, getTodayLeaderBoard, userDetailsUpdate,
-  V2userRegister, V2userLogin, V2addSubject, V2userDetails, V2userDetailsUpdate, V2getSubjects, V2getSubject, V2startTimer, V2stopTimer, V2getTodayLeaderBoard
+  V2userRegister, V2userLogin, V2addSubject, V2userDetails, V2userDetailsUpdate, V2getSubjects, V2getSubject, V2startTimer, V2stopTimer, V2getTodayLeaderBoard, 
+  searchUserByFriendCode, sendFriendRequest, acceptFriendRequest, listFriends, getFriendRequests, declineFriendRequest, removeFriend
  } from "./app";
 import { clearDB } from "./db";
 
@@ -397,6 +398,102 @@ app.get('/v2/leaderboard/users', async (req: Request, res: Response) => {
     res.status(400).json({ error: "Unknown error occurred" });
   }
 })
+
+// Search for friends by friendcode
+app.get("/v2/friends/search", async (req, res) => {
+  const { code } = req.query;
+  try {
+    const user = await searchUserByFriendCode(code as string);
+    res.json(user);
+  } catch (err) {
+    res.status(400).json({ error: (err as Error).message });
+  }
+});
+
+// Send a friend request
+app.post("/v2/friends/request", async (req, res) => {
+  try {
+    const { fromUserId, friendCode } = req.body;
+
+    const result = await sendFriendRequest(fromUserId, friendCode);
+    res.json(result);
+
+  } catch (err) {
+    res.status(400).json({ error: (err as Error).message });
+  }
+});
+
+// Accept a friend request
+app.post("/v2/friends/accept", async (req, res) => {
+  const { requestId, userId } = req.body;
+  try {
+    const result = await acceptFriendRequest(requestId, userId);
+    res.json(result);
+
+  } catch (err) {
+    res.status(400).json({ error: (err as Error).message });
+  }
+});
+
+// List friends
+app.get("/v2/friends/list/:userId", async (req, res) => {
+  const userId = Number(req.params.userId);
+  try {
+    const friends = await listFriends(userId);
+    res.json({ friends });
+  } catch (err) {
+    res.status(400).json({ error: (err as Error).message });
+  }
+});
+
+// View friend requests
+app.get("/v2/friends/requests", async (req: Request, res: Response) => {
+  const userId = Number(req.query.userId);
+
+  if (!userId) {
+    throw new Error("Missing userId");
+  }
+  try {
+    const requests = await getFriendRequests(userId);
+    res.json({ requests });
+  } catch (err) {
+    res.status(400).json({ error: (err as Error).message });
+  }
+});
+
+// Decline friend requests
+app.post("/v2/friends/decline", async (req: Request, res: Response) => {
+  try {
+    const { requestId, userId } = req.body;
+
+    if (!requestId || !userId) {
+      throw new Error("Missing requestId or userId");
+    }
+
+    const result = await declineFriendRequest(requestId, userId);
+
+    res.json(result);
+  } catch (err) {
+    res.status(400).json({ error: (err as Error).message });
+  }
+});
+
+// Remove a friend
+app.delete("/v2/friends/remove", async (req: Request, res: Response) => {
+  try {
+    const { userId, friendId } = req.body;
+
+    if (!userId || !friendId) {
+      throw new Error("Missing userId or friendId");
+    }
+
+    const result = await removeFriend(userId, friendId);
+
+    res.json(result);
+  } catch (err) {
+    res.status(400).json({ error: (err as Error).message });
+  }
+});
 
 // ===========================================================================
 // ============================= ROUTES ABOVE ================================
