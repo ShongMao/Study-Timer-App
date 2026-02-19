@@ -49,8 +49,18 @@ export default function LeaderboardPage() {
     }}>
       <div className="max-w-4xl mx-auto p-12 scrollbar-show">
         <div className="text-center mb-12">
-          <h2 className="text-5xl font-bold text-white mb-4">Global Leaderboard</h2>
-          <p className="text-xl text-white/80">Today's study time rankings</p>
+          <h2 
+            className="text-5xl font-bold text-white mb-4"
+            style={{ 
+              fontFamily: "'Neue Montreal', 'Georgia', 'Times New Roman', serif",
+              fontWeight: 500,
+              color: "rgba(255,255,255,0.92)",
+              letterSpacing: "0.04em",
+            }}
+          >
+            Global Leaderboard
+          </h2>
+          <p className="text-xs font-semibold tracking-widest uppercase mb-2" style={{ color: 'rgba(255,255,255,0.3)' }}>Today's study time rankings</p>
         </div>
         
         <div className="space-y-4">
